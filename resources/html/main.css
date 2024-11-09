@@ -1,0 +1,7 @@
+frame {size:*;}
+
+section { flow: horizontal }
+section > * { width:*; }
+
+img { vertical-align:middle; }
+code { display:inline-block; width:max-content; }

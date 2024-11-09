@@ -1,0 +1,4 @@
+function on_dom_load() {
+    // accessing native helloWorld() method defined in C++ class frame: 
+    $(#message).text = view.frame.helloWorld();
+}
