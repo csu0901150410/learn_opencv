@@ -13,16 +13,27 @@ class frame : public sciter::window
 public:
     frame() : window(SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS /*| SW_TOOL*/ | SW_MAIN | SW_ENABLE_DEBUG) {}
 
-    SOM_PASSPORT_BEGIN(frame)
-
-    SOM_FUNCS(SOM_FUNC(helloWorld))
-
-    SOM_PASSPORT_END
-
-    // function for script: view.frame.helloWorld()
-    sciter::string helloWorld()
+    sciter::string tis_call_native_function_by_name()
     {
-        return WSTR("Hello TISript!");
+        return WSTR("tis_call_native_function_by_name");
+    }
+
+    // BEGIN_FUNCTION_MAP
+    //     FUNCTION_0("call_native", tis_call_native_function_by_name);
+    // END_FUNCTION_MAP
+
+    virtual bool on_script_call(HELEMENT he, LPCSTR name, UINT argc, const sciter::value* argv, sciter::value& retval)
+    {
+        aux::chars _name = aux::chars_of(name);
+
+        // c++函数暴露给脚本，没有参数。其实就是字符串到函数指针的映射
+        if (const_chars("call_native") == _name)
+        {
+            retval = tis_call_native_function_by_name();
+            return true;
+        }
+
+        return false;
     }
 };
 
