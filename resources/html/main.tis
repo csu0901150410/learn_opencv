@@ -1,3 +1,5 @@
 function on_dom_load() {
-    $(#message).text = view.call_native("hello_tis", "modify by tis");
+    var params = {};
+    params["func_name"] = "on_dom_load";
+    view.call_native("hello_tis", params);
 }

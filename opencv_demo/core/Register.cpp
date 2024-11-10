@@ -8,7 +8,7 @@ Register *Register::instance()
     return uniqueInstance;
 }
 
-bool Register::register_function(const std::string &name, _register_func_ptr func)
+bool Register::register_function(const std::string &name, _command_func_ptr func)
 {
     if (_registered_func.end() != _registered_func.find(name))
         return false;
@@ -16,7 +16,7 @@ bool Register::register_function(const std::string &name, _register_func_ptr fun
     return true;
 }
 
-_register_func_ptr Register::get_function(const std::string &name)
+_command_func_ptr Register::get_function(const std::string &name)
 {
     if (_registered_func.end() == _registered_func.find(name))
         return nullptr;

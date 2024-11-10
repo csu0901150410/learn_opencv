@@ -9,10 +9,13 @@
 #include <codecvt>
 #include <functional>
 
+#include "json/json.h"
+
 #include "Register.h"
 
 // native API demo
 
+// 字符串类型转换
 std::string to_std_string(const sciter::string& str)
 {
     aux::w2a auxstr(str.c_str());
@@ -26,9 +29,12 @@ sciter::string to_sciter_string(const std::string& str)
 }
 
 // 命令定义及注册
-std::string hello_tis(const std::string& param)
+bool hello_tis(const Json::Value& params)
 {
-    return param;
+    std::string str = params["func_name"].asCString();
+    if ("on_dom_load" == str)
+        return true;
+    return false;
 }
 REGISTER_FUNCTION("hello_tis", hello_tis);
 
@@ -37,12 +43,10 @@ class frame : public sciter::window
 public:
     frame() : window(SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS /*| SW_TOOL*/ | SW_MAIN | SW_ENABLE_DEBUG) {}
 
-    sciter::string tis_call_native_function_by_name(std::string& name, std::string& param)
+    bool tis_call_native_function_by_name(std::string& name, Json::Value& params)
     {
-        _register_func_ptr ptr = GET_REGISTERER_FUNCTION(name);
-        _register_func_ptr target = hello_tis;
-        std::string ret = ptr(param);
-        return to_sciter_string(ret);
+        bool ret = GET_REGISTERER_FUNCTION(name)(params);
+        return ret;
     }
 
     // BEGIN_FUNCTION_MAP
@@ -56,11 +60,18 @@ public:
         // 暴露给脚本的接口，脚本通过这个接口根据c++命令名字调用命令
         if (const_chars("call_native") == _name)
         {
-            // todo - 统一将第二个参数解析为json，如果解析失败，则参数无效
-            std::string str_name = to_std_string(argv[0].to_string());
-            std::string str_param = to_std_string(argv[1].to_string());
-            retval = tis_call_native_function_by_name(str_name, str_param);
-            return true;
+            std::string strName = to_std_string(argv[0].to_string());
+            std::string strParams = to_std_string(argv[1].to_string(CVT_JSON_LITERAL));
+
+            Json::Reader jsReader;
+            Json::Value jsParams;
+            if (!jsReader.parse(strParams, jsParams))
+            {
+                std::cerr << "json parse failed" << std::endl;
+                return false;
+            }
+
+            return tis_call_native_function_by_name(strName, jsParams);
         }
 
         return false;

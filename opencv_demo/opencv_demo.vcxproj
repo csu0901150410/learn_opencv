@@ -108,7 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(CPP_LIBS)\opencv\build\include;$(CPP_LIBS)\sciter-sdk\include;$(SolutionDir);core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_LIBS)\opencv\build\include;$(CPP_LIBS)\sciter-sdk\include;$(SolutionDir);core;../3rdparty/jsoncpp/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,12 +146,29 @@ cd $(ProjectDir)</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_reader.cpp" />
+    <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_value.cpp" />
+    <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_writer.cpp" />
     <ClCompile Include="core\Register.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sciter-win-main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\allocator.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\assertions.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\config.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\forwards.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\json.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\json_features.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\reader.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\value.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\version.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\writer.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\src\lib_json\json_tool.h" />
     <ClInclude Include="core\Register.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\3rdparty\jsoncpp\src\lib_json\json_valueiterator.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
