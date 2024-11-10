@@ -1,21 +1,48 @@
-
+﻿
 #include "sciter-x.h"
 #include "sciter-x-graphics.hpp"
 #include "sciter-x-window.hpp"
 #include "sciter-om.h"
 
+#include <string>
+#include <locale>
+#include <codecvt>
 #include <functional>
 
+#include "Register.h"
+
 // native API demo
+
+std::string to_std_string(const sciter::string& str)
+{
+    aux::w2a auxstr(str.c_str());
+    return auxstr.c_str();
+}
+
+sciter::string to_sciter_string(const std::string& str)
+{
+    aux::a2w auxstr(str.c_str());
+    return auxstr.c_str();
+}
+
+// 命令定义及注册
+std::string hello_tis(const std::string& param)
+{
+    return param;
+}
+REGISTER_FUNCTION("hello_tis", hello_tis);
 
 class frame : public sciter::window
 {
 public:
     frame() : window(SW_TITLEBAR | SW_RESIZEABLE | SW_CONTROLS /*| SW_TOOL*/ | SW_MAIN | SW_ENABLE_DEBUG) {}
 
-    sciter::string tis_call_native_function_by_name()
+    sciter::string tis_call_native_function_by_name(std::string& name, std::string& param)
     {
-        return WSTR("tis_call_native_function_by_name");
+        _register_func_ptr ptr = GET_REGISTERER_FUNCTION(name);
+        _register_func_ptr target = hello_tis;
+        std::string ret = ptr(param);
+        return to_sciter_string(ret);
     }
 
     // BEGIN_FUNCTION_MAP
@@ -26,10 +53,13 @@ public:
     {
         aux::chars _name = aux::chars_of(name);
 
-        // c++函数暴露给脚本，没有参数。其实就是字符串到函数指针的映射
+        // 暴露给脚本的接口，脚本通过这个接口根据c++命令名字调用命令
         if (const_chars("call_native") == _name)
         {
-            retval = tis_call_native_function_by_name();
+            // todo - 统一将第二个参数解析为json，如果解析失败，则参数无效
+            std::string str_name = to_std_string(argv[0].to_string());
+            std::string str_param = to_std_string(argv[1].to_string());
+            retval = tis_call_native_function_by_name(str_name, str_param);
             return true;
         }
 
