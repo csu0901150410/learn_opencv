@@ -1,5 +1,18 @@
 function on_dom_load() {
+    $(#btnCallNative).subscribe("click", script_call_native);
+
+    $(#message).text = "before click";
+}
+
+// 脚本调用c++函数
+function script_call_native() {
     var params = {};
-    params["func_name"] = "on_dom_load";
+    params["script"] = "function_in_script";
     view.call_native("hello_tis", params);
+}
+
+// 被脚本调用的c++函数内部，又调用这个位于脚本中的函数
+function function_in_script() {
+    $(#message).text = "after click";
+    $(#string).style["background-color"] = "red";
 }
