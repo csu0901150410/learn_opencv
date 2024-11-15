@@ -23,4 +23,18 @@ public:
     window();
     bool init(); // instance
     bool is_valid() const { return _hwnd != 0; }
+
+private:
+    // function exposed to script
+    sciter::value expose_to_script()
+    {
+        return TEXT("hello tis");
+    }
+
+public:
+// expose member methods to script
+// in script: view.member_method(...)
+BEGIN_FUNCTION_MAP
+    FUNCTION_0("native_function_call_by_script", expose_to_script);
+END_FUNCTION_MAP
 };

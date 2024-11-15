@@ -10,5 +10,13 @@ body {
     margin: 0;
     padding: 0;
     text-align: center;
+    horizontal-align: center;
     vertical-align: middle;
+}
+
+button {
+    min-width: max-content;
+    width: 80dip;
+    padding-top: 4dip;
+    padding-bottom: 4dip;
 }

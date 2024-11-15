@@ -1,43 +1,22 @@
 
-class Drawable : Behavior
-{
-    function attached() { // attaching the paint() to paintContent layer handler
-        this.paintContent = this.paint;
-        this.image = this.loadImage("last-diligence-from-gabriola.jpg");
-    }
-
-    function paint(gfx) {
-        if (!this.image)
-            return;
-        gfx.drawImage(this.image, 0, 0, this.image.width, this.image.height);
-    }
-}
 
 function self.ready() {
     on_dom_load();
-
-    $(button#btnClose).subscribe("click", function(evt){
-       view.close(); 
-    });
-}
-
-function load_image() {
-    var img = this.loadImage("last-diligence-from-gabriola.jpg");
-    $(widget#image-widget).bindImage("in-memory:test", img);
 }
 
 function on_dom_load() {
-    load_image();
+    $(p#txtHello).attributes["value"] = $(p#txtHello).text;
+    
+    $(button#btnChangeText).subscribe("click", on_btnChangeText_click);
+    $(button#btnResetText).subscribe("click", on_btnResetText_click);
 }
 
-// 脚本调用c++函数
-function script_call_native() {
-    var params = {};
-    params["script"] = "function_in_script";
-    view.call_native("hello_tis", params);
+function on_btnChangeText_click() {
+    // script call function on native side
+    var text = view.native_function_call_by_script();
+    $(p#txtHello).text = text;
 }
 
-// 被脚本调用的c++函数内部，又调用这个位于脚本中的函数
-function function_in_script() {
-    view.msgbox("call function in script");
+function on_btnResetText_click() {
+    $(p#txtHello).text = $(p#txtHello).attributes["value"];
 }
