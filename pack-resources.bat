@@ -4,7 +4,7 @@
 set SciterSDK=%CPP_LIBS%\sciter-sdk
 
 ::获取打包程序packfolder.exe路径
-set PackFolderEXE="%SciterSDK%\bin.win\packfolder.exe"
+set PackFolderEXE="3rdparty\sciter\packfolder.exe"
 
 ::获取资源文件夹路径
 set ResPath="./resources/html"
