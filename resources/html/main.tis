@@ -1,7 +1,33 @@
-function on_dom_load() {
-    $(#btnCallNative).subscribe("click", script_call_native);
 
-    $(#message).text = "before click";
+class Drawable : Behavior
+{
+    function attached() { // attaching the paint() to paintContent layer handler
+        this.paintContent = this.paint;
+        this.image = this.loadImage("last-diligence-from-gabriola.jpg");
+    }
+
+    function paint(gfx) {
+        if (!this.image)
+            return;
+        gfx.drawImage(this.image, 0, 0, this.image.width, this.image.height);
+    }
+}
+
+function self.ready() {
+    on_dom_load();
+
+    $(button#btnClose).subscribe("click", function(evt){
+       view.close(); 
+    });
+}
+
+function load_image() {
+    var img = this.loadImage("last-diligence-from-gabriola.jpg");
+    $(widget#image-widget).bindImage("in-memory:test", img);
+}
+
+function on_dom_load() {
+    load_image();
 }
 
 // 脚本调用c++函数
@@ -13,6 +39,5 @@ function script_call_native() {
 
 // 被脚本调用的c++函数内部，又调用这个位于脚本中的函数
 function function_in_script() {
-    $(#message).text = "after click";
-    $(#string).style["background-color"] = "red";
+    view.msgbox("call function in script");
 }

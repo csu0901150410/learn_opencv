@@ -1,27 +1,17 @@
-<html window-icon="images/globe.svg" window-resizable="true">
-  <head>
-    <title>The World</title>
+﻿<html window-resizable="true">
+
+<head>
+    <title>Demo</title>
     <style>
-    
-      @import url(main.css);
-    
+        @import url(main.css);
     </style>
     <script type="text/tiscript">
-      include "main.tis";
-
-      function self.ready() {
-        on_dom_load();
-      }
+        include "main.tis";
     </script>
-  </head>
+</head>
+
 <body>
-  <section>
-    <div>   
-      <p id="string"><em id="message" /> - produced by native <code>frame::helloWorld()</code> </p>
-    </div>
-    <div>
-      <button id="btnCallNative">script call native function</button>
-    </div>
-  </section>
+    <p>Hello Sciter</p>
 </body>
+
 </html>

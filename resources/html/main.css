@@ -1,7 +1,14 @@
-frame {size:*;}
 
-section { flow: horizontal }
-section > * { width:*; }
+html {
+    background: transparent;
+    font: system;
+    color: #ddd;
+}
 
-img { vertical-align:middle; }
-code { display:inline-block; width:max-content; }
+body {
+    flow: vertical;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+}
