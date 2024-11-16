@@ -31,10 +31,17 @@ private:
         return TEXT("hello tis");
     }
 
+    // call script function
+    sciter::value call_script()
+    {
+        return this->call_function("script_call_by_native");
+    }
+
 public:
 // expose member methods to script
 // in script: view.member_method(...)
 BEGIN_FUNCTION_MAP
     FUNCTION_0("native_function_call_by_script", expose_to_script);
+    FUNCTION_0("call_script", call_script);
 END_FUNCTION_MAP
 };

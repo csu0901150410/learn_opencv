@@ -9,6 +9,7 @@ function on_dom_load() {
     
     $(button#btnChangeText).subscribe("click", on_btnChangeText_click);
     $(button#btnResetText).subscribe("click", on_btnResetText_click);
+    $(button#btnNestedCall).subscribe("click", on_btnNestedCall_click);
 }
 
 function on_btnChangeText_click() {
@@ -19,4 +20,15 @@ function on_btnChangeText_click() {
 
 function on_btnResetText_click() {
     $(p#txtHello).text = $(p#txtHello).attributes["value"];
+}
+
+// 嵌套调用。脚本触发按钮事件，脚本函数调用c++，c++内部再调用另一个脚本函数
+function on_btnNestedCall_click() {
+    var text = view.call_script();
+    $(p#txtHello).text = text;
+}
+
+// 被c++调用的脚本函数
+function script_call_by_native() {
+    return "nested calls";
 }
