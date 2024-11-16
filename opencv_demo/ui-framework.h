@@ -4,6 +4,7 @@
 #include "sciter-x.h"
 #include "sciter-x-host-callback.h"
 #include "sciter-x-threads.h"
+#include "sciter-x-graphics.hpp"
 
 extern HINSTANCE ghInstance;
 
@@ -37,11 +38,19 @@ private:
         return this->call_function("script_call_by_native");
     }
 
+    sciter::value get_workarea_image()
+    {
+        aux::bytes bytes = sciter::archive::instance().get(TEXT("//images/opencv-logo.png"));
+        sciter::image image = sciter::image::load(bytes);
+        return image.to_value();
+    }
+
 public:
 // expose member methods to script
 // in script: view.member_method(...)
 BEGIN_FUNCTION_MAP
     FUNCTION_0("native_function_call_by_script", expose_to_script);
     FUNCTION_0("call_script", call_script);
+    FUNCTION_0("get_workarea_image", get_workarea_image);
 END_FUNCTION_MAP
 };

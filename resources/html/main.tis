@@ -5,30 +5,44 @@ function self.ready() {
 }
 
 function on_dom_load() {
-    $(p#txtHello).attributes["value"] = $(p#txtHello).text;
+    $(#txtHello).attributes["value"] = $(#txtHello).text;
     
     $(button#btnChangeText).subscribe("click", on_btnChangeText_click);
     $(button#btnResetText).subscribe("click", on_btnResetText_click);
     $(button#btnNestedCall).subscribe("click", on_btnNestedCall_click);
+    
+    $(button#btnLoadImage).subscribe("click", on_btnLoadImage_click);
 }
 
 function on_btnChangeText_click() {
     // script call function on native side
     var text = view.native_function_call_by_script();
-    $(p#txtHello).text = text;
+    $(#txtHello).text = text;
 }
 
 function on_btnResetText_click() {
-    $(p#txtHello).text = $(p#txtHello).attributes["value"];
+    $(#txtHello).text = $(#txtHello).attributes["value"];
 }
 
 // 嵌套调用。脚本触发按钮事件，脚本函数调用c++，c++内部再调用另一个脚本函数
 function on_btnNestedCall_click() {
     var text = view.call_script();
-    $(p#txtHello).text = text;
+    $(#txtHello).text = text;
 }
 
 // 被c++调用的脚本函数
 function script_call_by_native() {
     return "nested calls";
+}
+
+function update_image_area(img) {
+    var area = $(#imgWorkArea);
+    var strurl = "in-memory:image-area";
+    area.bindImage(strurl, img);
+    area.style["background-image"] = String.printf("url(%s)", strurl);
+}
+
+function on_btnLoadImage_click() {
+    var img = view.get_workarea_image();
+    update_image_area(img);
 }
