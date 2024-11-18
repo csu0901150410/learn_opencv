@@ -18,6 +18,8 @@ public:
 
     _command_func_ptr get_function(const std::string& name);
 
+    bool execute_function(const std::string& name, const Json::Value& params);
+
 private:
     Register() = default;
     std::unordered_map<std::string, _command_func_ptr> _registered_func;
@@ -36,3 +38,7 @@ Register_##func g_register_##func;
 // 函数获取宏
 #define GET_REGISTERER_FUNCTION(name) \
 Register::instance()->get_function(name)
+
+// 函数执行宏
+#define EXECUTE_REGISTER_FUNCTION(name, params) \
+Register::instance()->execute_function(name, params)

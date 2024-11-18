@@ -33,14 +33,6 @@ button {
     padding-bottom: 4dip;
 }
 
-label {
-    flow: horizontal;
-    horizontal-align: center;
-    min-width: max-content;
-    padding-top: 4dip;
-    padding-bottom: 4dip;
-}
-
 div {
     flow: vertical;
 }

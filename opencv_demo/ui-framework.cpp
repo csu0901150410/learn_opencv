@@ -1,12 +1,21 @@
-// ui-framework.cpp : Defines the entry point for the application.
+﻿// ui-framework.cpp : Defines the entry point for the application.
 //
 
 #include "stdafx.h"
 #include "ui-framework.h"
 
+#include "json/json.h"
+
+#include "sciter_utils.h"
+#include "Register.h"
+
+#include <opencv2/opencv.hpp>
+#include <vector>
+
 #include "resources.cpp"
 
 HINSTANCE ghInstance = 0;
+sciter::image gMainImage;
 
 #define WINDOW_CLASS_NAME L"sciter-ui-frame"			// the main window class name
 
@@ -70,6 +79,99 @@ bool window::init()
 	load_file(L"this://app/main.htm");
 
 	return true;
+}
+
+// 注册命令示例
+bool command_register_sample(const Json::Value& params)
+{
+    // 解析命令参数
+	int threshold = params["threshold_value"].asInt();
+
+	if (!gMainImage.is_valid())
+		return false;
+
+    // 执行c++侧的一些处理，比方说把图像二值化
+	sciter::bytes_writer bw;
+	gMainImage.save(bw, SCITER_IMAGE_ENCODING_RAW);
+	
+	UINT width = 0, height = 0;
+	gMainImage.dimensions(width, height);
+	cv::Mat srcimage = cv::Mat(width * height * 4, 1, CV_8U, (unsigned*)bw.bb.data());
+
+	if (srcimage.empty())
+		return false;
+
+	// 转灰度
+	cv::Mat grayimage;
+	// see https://sciter.com/forums/topic/himg-raw-image-data/
+	//cv::cvtColor(srcimage, grayimage, cv::COLOR_RGBA2GRAY);
+
+	// 灰度图二值化
+	cv::Mat binimage;
+	int maxvalue = 255;
+	int type = cv::THRESH_BINARY;
+	cv::threshold(srcimage, binimage, threshold, maxvalue, type);
+	
+	// 再转回sciter::image
+	int channels = binimage.channels();
+	int rows = binimage.rows;
+	int cols = binimage.cols;
+ 
+	char* dp = (char*)binimage.data;
+	std::vector<uchar> buffer;
+	if (channels == 3)
+	{
+		for (int i = 0; i < rows * cols; i++)
+		{
+			buffer.push_back(dp[i * 3]);
+			buffer.push_back(dp[i * 3 + 1]);
+			buffer.push_back(dp[i * 3 + 2]);
+		}
+	}
+	else if (channels == 1)
+	{
+		for (int i = 0; i < rows * cols; i++)
+		{
+			buffer.push_back(dp[i]);
+		}
+	}
+	
+	aux::bytes bytes(&buffer[0], buffer.size());
+	gMainImage = sciter::image::create(width, height, false, &buffer[0]);
+
+	// 此处可以在类外部调用脚本函数，其实现和在类外部注册被脚本调用的命令差不多，后续实现
+	// todo - 调用脚本函数刷新图像
+    
+    return true;
+}
+REGISTER_FUNCTION("command_register_sample", command_register_sample);
+
+bool window::custom_on_script_call(HELEMENT he, LPCSTR name, UINT argc, const sciter::value *argv, sciter::value &retval)
+{
+	aux::chars _name = aux::chars_of(name);
+	
+	if (const_chars("call_native") == _name)
+	{
+		// 脚本调用c++函数，统一用这个接口。脚本中语句view.call_native("funcname", params)
+		// 此处将会根据字符串"funcname"找到对应的函数指针，执行c++函数调用
+		// 注意此处被脚本调用的c++函数并非类的成员函数，而是定义在类外的函数，可称为命令
+
+		std::string strName = to_std_string(argv[0].to_string());
+		std::string strParams = to_std_string(argv[1].to_string(CVT_JSON_LITERAL));
+
+		Json::Reader jsReader;
+		Json::Value jsParams;
+		if (!jsReader.parse(strParams, jsParams))
+		{
+			std::cerr << "json parse failed : " << strParams << std::endl;
+			return false;
+		}
+		
+		EXECUTE_REGISTER_FUNCTION(strName, jsParams);
+		return true;// 此处处理完c++函数调用，外部重载的on_script_call就直接返回了
+	}
+	
+    return false;
 }
 
 //

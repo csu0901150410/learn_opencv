@@ -22,3 +22,11 @@ _command_func_ptr Register::get_function(const std::string &name)
         return nullptr;
     return _registered_func.at(name);
 }
+
+bool Register::execute_function(const std::string &name, const Json::Value& params)
+{
+    auto ptr = get_function(name);
+    if (nullptr == ptr)
+        return false;
+    return ptr(params);
+}

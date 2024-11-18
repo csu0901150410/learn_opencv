@@ -35,6 +35,9 @@
     <ClCompile Include="ui-framework.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="sciter_utils.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\Register.h">
@@ -80,6 +83,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="sciter_utils.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
