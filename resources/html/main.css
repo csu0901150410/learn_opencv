@@ -41,3 +41,10 @@ div#imgWorkArea {
     width: *;
     height: *;
 }
+
+#drawarea {
+    behavior: native-textarea;
+    display: block;
+    size: *;
+    border: 1dip solid;
+}

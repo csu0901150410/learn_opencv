@@ -101,16 +101,23 @@ bool command_register_sample(const Json::Value& params)
 	if (srcimage.empty())
 		return false;
 
+	int srcc = srcimage.channels();
+
 	// 转灰度
-	cv::Mat grayimage;
+	cv::Mat grayimage = srcimage.reshape(4, 0);
+	int gccc = grayimage.channels();
 	// see https://sciter.com/forums/topic/himg-raw-image-data/
-	//cv::cvtColor(srcimage, grayimage, cv::COLOR_RGBA2GRAY);
+	cv::cvtColor(grayimage, grayimage, cv::COLOR_BGRA2RGB);
+	gccc = grayimage.channels();
+	cv::cvtColor(grayimage, grayimage, cv::COLOR_RGB2GRAY);
+	gccc = grayimage.channels();
 
 	// 灰度图二值化
 	cv::Mat binimage;
 	int maxvalue = 255;
 	int type = cv::THRESH_BINARY;
-	cv::threshold(srcimage, binimage, threshold, maxvalue, type);
+	cv::threshold(grayimage, binimage, 175, 255, cv::THRESH_BINARY);
+
 	
 	// 再转回sciter::image
 	int channels = binimage.channels();

@@ -38,6 +38,9 @@
     <ClCompile Include="sciter_utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="behavior_native_textarea.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\Register.h">

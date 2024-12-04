@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{ef32a3b1-b369-4684-9e7e-21b9c95480ea}</ProjectGuid>
-    <RootNamespace>opencvdemo</RootNamespace>
+    <ProjectGuid>{86103345-d9a7-4c4e-938b-fb51a8b91c4d}</ProjectGuid>
+    <RootNamespace>wxApp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -106,28 +106,15 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;SKIP_MAIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(CPP_LIBS)\opencv\build\include;$(SolutionDir);./core;../3rdparty/jsoncpp/include;../3rdparty/sciter/include;../3rdparty/sciter/include/behaviors;../3rdparty/sciter/include/behaviors/camera;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_LIBS)\wxWidgets\include;$(CPP_LIBS)\wxWidgets\include\msvc;../3rdparty/sciter/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(CPP_LIBS)\opencv\build\x64\vc16\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_world490d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CPP_LIBS)\wxWidgets\lib\vc_x64_lib;</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy "$(CPP_LIBS)\opencv\build\x64\vc16\bin\opencv_world490d.dll" "$(SolutionDir)build\" /s /e /i /d /y
-xcopy "..\3rdparty\sciter\bin\x64\sciter.dll" "$(SolutionDir)build\" /s /e /i /d /y</Command>
-    </PostBuildEvent>
-    <Manifest>
-      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
-    </Manifest>
-    <PreBuildEvent>
-      <Command>cd $(SolutionDir)
-pack-resources.bat
-cd $(ProjectDir)</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -146,34 +133,12 @@ cd $(ProjectDir)</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_reader.cpp" />
-    <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_value.cpp" />
-    <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_writer.cpp" />
-    <ClCompile Include="behavior_native_textarea.cpp" />
-    <ClCompile Include="core\Register.cpp" />
-    <ClCompile Include="sciter_utils.cpp" />
-    <ClCompile Include="ui-framework.cpp" />
+    <ClCompile Include="..\3rdparty\sciter\include\sciter-win-main.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\sciter-control.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\3rdparty\jsoncpp\include\json\allocator.h" />
-    <ClInclude Include="..\3rdparty\jsoncpp\include\json\assertions.h" />
-    <ClInclude Include="..\3rdparty\jsoncpp\include\json\config.h" />
-    <ClInclude Include="..\3rdparty\jsoncpp\include\json\forwards.h" />
-    <ClInclude Include="..\3rdparty\jsoncpp\include\json\json.h" />
-    <ClInclude Include="..\3rdparty\jsoncpp\include\json\json_features.h" />
-    <ClInclude Include="..\3rdparty\jsoncpp\include\json\reader.h" />
-    <ClInclude Include="..\3rdparty\jsoncpp\include\json\value.h" />
-    <ClInclude Include="..\3rdparty\jsoncpp\include\json\version.h" />
-    <ClInclude Include="..\3rdparty\jsoncpp\include\json\writer.h" />
-    <ClInclude Include="..\3rdparty\jsoncpp\src\lib_json\json_tool.h" />
-    <ClInclude Include="core\Register.h" />
-    <ClInclude Include="sciter_utils.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="ui-framework.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\3rdparty\jsoncpp\src\lib_json\json_valueiterator.inl" />
+    <ClInclude Include="src\sciter-control.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
