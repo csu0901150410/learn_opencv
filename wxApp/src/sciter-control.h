@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <wx/control.h>
 #include <sciter-x-window.hpp>
@@ -20,7 +20,7 @@ public:
 
 	// Creation
 	bool Create(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
-		long style = wxSUNKEN_BORDER, const wxValidator& validator = wxDefaultValidator);
+		long style = wxNO_BORDER, const wxValidator& validator = wxDefaultValidator);
 
 public:
 	sciter::dom::element get_root() const;
@@ -28,6 +28,8 @@ public:
 protected:
 	// Common initialization
 	void Init();
+
+	void AdjustToParent();
 
 	// Overrides
 	wxSize DoGetBestSize() const;

@@ -1,4 +1,4 @@
-#include <wx/wx.h>
+ï»¿#include <wx/wx.h>
 #include <wx/control.h>
 #include <wx/gdicmn.h>
 
@@ -67,12 +67,35 @@ bool wxSciterControl::Create(wxWindow* parent, wxWindowID id, const wxPoint& pos
 
 		this->Refresh();
 	}
+
 	return true;
 }
 
 void wxSciterControl::Init()
 {
 
+}
+
+void wxSciterControl::AdjustToParent()
+{
+	if (!GetParent() || !m_hwnd)
+        return;
+            
+	wxSize parentClientSize = GetParent()->GetClientSize();
+	
+	// å…ˆéšè—çª—å£
+	ShowWindow(m_hwnd, SW_HIDE);
+	
+	// è°ƒæ•´å¤§å°å’Œä½ç½®
+	SetSize(0, 0, parentClientSize.GetWidth(), parentClientSize.GetHeight());
+        
+#ifdef __WINDOWS__
+	RECT rc = { 0, 0, parentClientSize.GetWidth(), parentClientSize.GetHeight() };
+	SetWindowPos(m_hwnd, nullptr, rc.left, rc.top, rc.right, rc.bottom, SWP_NOZORDER);
+	
+	// é‡æ–°æ˜¾ç¤ºçª—å£
+	ShowWindow(m_hwnd, SW_SHOW);
+#endif
 }
 
 wxSize wxSciterControl::DoGetBestSize() const
@@ -82,11 +105,14 @@ wxSize wxSciterControl::DoGetBestSize() const
 
 void wxSciterControl::OnSize(wxSizeEvent& evt)
 {
-	wxRect rc = this->GetClientRect();
-	rc.SetSize(evt.GetSize());
-#ifdef __WINDOWS__
-	SetWindowPos(m_hwnd, nullptr, rc.GetX(), rc.GetY(), rc.GetWidth(), rc.GetHeight(), SWP_NOZORDER);
-#endif
+// 	wxRect rc = this->GetClientRect();
+// 	rc.SetSize(evt.GetSize());
+// #ifdef __WINDOWS__
+// 	SetWindowPos(m_hwnd, nullptr, rc.GetX(), rc.GetY(), rc.GetWidth(), rc.GetHeight(), SWP_NOZORDER);
+// #endif
+
+	AdjustToParent();
+    evt.Skip();
 }
 
 void wxSciterControl::OnShow(wxShowEvent& evt)
@@ -99,7 +125,7 @@ void wxSciterControl::OnShow(wxShowEvent& evt)
 sciter::dom::element wxSciterControl::get_root() const
 {
 	if (!m_root) {
-		// ×ÓÀàget_rootÊÇconstµÄ£¬¸¸Ààget_rootÊÇ·ÇconstµÄ£¬ËùÒÔÒª½«thisÖ¸ÕëµÄconstÊôĞÔÈ¥µôÔÙµ÷ÓÃ¸¸Àà·½·¨
+		// å­ç±»get_rootæ˜¯constçš„ï¼Œçˆ¶ç±»get_rootæ˜¯éconstçš„ï¼Œæ‰€ä»¥è¦å°†thisæŒ‡é’ˆçš„constå±æ€§å»æ‰å†è°ƒç”¨çˆ¶ç±»æ–¹æ³•
 		sciter::host<wxSciterControl>* base = const_cast<wxSciterControl*>(this);
 		m_root = base->get_root();
 	}
