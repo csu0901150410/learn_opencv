@@ -38,7 +38,7 @@
     <ClCompile Include="sciter_utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="behavior_native_textarea.cpp">
+    <ClCompile Include="behavior_native_ocvwindow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

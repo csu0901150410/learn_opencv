@@ -37,13 +37,16 @@ div {
     flow: vertical;
 }
 
-div#imgWorkArea {
+#ocv-pannel {
+    flow: horizontal;
     width: *;
     height: *;
+    border-spacing: 16px;
+    background: grey;
 }
 
-#drawarea {
-    behavior: native-textarea;
+div.ocv-window {
+    behavior: native-ocvwindow;
     display: block;
     size: *;
     border: 1dip solid;

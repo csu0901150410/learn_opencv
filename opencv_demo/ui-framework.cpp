@@ -74,9 +74,15 @@ bool window::init()
 	setup_callback(); // callbacks
 	sciter::attach_dom_event_handler(_hwnd, this); // dom events and callbacks
 
+#ifdef _DEBUG
+	// 调试模式下，直接加载文件
+	// "home://main.htm"即exe路径下的main.htm
+	// see https://sciter.com/forums/reply/87076/
+	load_file(L"home://../resources/html/main.htm");
+#else
 	sciter::archive::instance().open(aux::elements_of(resources));
-
 	load_file(L"this://app/main.htm");
+#endif
 
 	return true;
 }

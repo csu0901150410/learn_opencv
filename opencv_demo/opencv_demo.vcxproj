@@ -124,9 +124,8 @@ xcopy "..\3rdparty\sciter\bin\x64\sciter.dll" "$(SolutionDir)build\" /s /e /i /d
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
     <PreBuildEvent>
-      <Command>cd $(SolutionDir)
-pack-resources.bat
-cd $(ProjectDir)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,7 +148,7 @@ cd $(ProjectDir)</Command>
     <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_reader.cpp" />
     <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_value.cpp" />
     <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_writer.cpp" />
-    <ClCompile Include="behavior_native_textarea.cpp" />
+    <ClCompile Include="behavior_native_ocvwindow.cpp" />
     <ClCompile Include="core\Register.cpp" />
     <ClCompile Include="sciter_utils.cpp" />
     <ClCompile Include="ui-framework.cpp" />
