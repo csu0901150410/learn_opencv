@@ -105,14 +105,14 @@ wxSize wxSciterControl::DoGetBestSize() const
 
 void wxSciterControl::OnSize(wxSizeEvent& evt)
 {
-// 	wxRect rc = this->GetClientRect();
-// 	rc.SetSize(evt.GetSize());
-// #ifdef __WINDOWS__
-// 	SetWindowPos(m_hwnd, nullptr, rc.GetX(), rc.GetY(), rc.GetWidth(), rc.GetHeight(), SWP_NOZORDER);
-// #endif
+ 	wxRect rc = this->GetClientRect();
+ 	rc.SetSize(evt.GetSize());
+ #ifdef __WINDOWS__
+ 	SetWindowPos(m_hwnd, nullptr, rc.GetX(), rc.GetY(), rc.GetWidth(), rc.GetHeight(), SWP_NOZORDER);
+ #endif
 
-	AdjustToParent();
-    evt.Skip();
+	/*AdjustToParent();
+    evt.Skip();*/
 }
 
 void wxSciterControl::OnShow(wxShowEvent& evt)

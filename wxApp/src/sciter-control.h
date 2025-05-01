@@ -20,7 +20,7 @@ public:
 
 	// Creation
 	bool Create(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
-		long style = wxNO_BORDER, const wxValidator& validator = wxDefaultValidator);
+		long style = wxSUNKEN_BORDER, const wxValidator& validator = wxDefaultValidator);
 
 public:
 	sciter::dom::element get_root() const;
