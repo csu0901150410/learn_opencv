@@ -115,6 +115,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(CPP_LIBS)\wxWidgets\lib\vc_x64_lib;</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "..\3rdparty\sciter\bin\x64\sciter.dll" "$(SolutionDir)build\" /s /e /i /d /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -133,12 +136,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\3rdparty\sciter\include\sciter-win-main.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\sciter-control.cpp" />
+    <ClCompile Include="src\wxOcvWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sciter-control.h" />
+    <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\targetver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

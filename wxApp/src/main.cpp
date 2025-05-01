@@ -24,8 +24,7 @@ public:
 	void OnQuit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
 	void OnOpen(wxCommandEvent& event);
-
-	DECLARE_EVENT_TABLE()
+	void OnPaint(wxPaintEvent& event);
 };
 
 enum
@@ -35,18 +34,17 @@ enum
 	ID_Open,
 };
 
-BEGIN_EVENT_TABLE(MyFrame, wxFrame)
-EVT_MENU(ID_Quit, MyFrame::OnQuit)
-EVT_MENU(ID_About, MyFrame::OnAbout)
-EVT_MENU(ID_Open, MyFrame::OnOpen)
-END_EVENT_TABLE();
-
 IMPLEMENT_APP(MyApp);
 
 bool MyApp::OnInit()
 {
 	SciterClassName();
 	MyFrame* frame = new MyFrame("Sciter integration for wxWidgets", wxPoint(50, 50), wxSize(1920, 1080));
+
+	wxIcon icon;
+	icon.LoadFile("../resources/images/icons/app.ico", wxBITMAP_TYPE_ICO);
+	frame->SetIcon(icon);
+
 	frame->Show(TRUE);
 	SetTopWindow(frame);
 	return TRUE;
@@ -70,7 +68,8 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 
 	//wxFontSelectorCtrl* ctl = new wxFontSelectorCtrl(this, this->NewControlId());
 	m_sciter = new wxSciterControl(this, this->NewControlId());
-	m_sciter->load_file(L"http://httpbin.org/html");
+	//m_sciter->load_file(L"http://httpbin.org/html");
+	m_sciter->load_file(L"home://../resources/wxhtml/main.htm");
 
     wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(m_sciter, 1, wxEXPAND);
@@ -83,6 +82,11 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 	SetStatusText("Welcome to wxWindows!");
 
 	Centre();
+
+	Bind(wxEVT_MENU, &MyFrame::OnQuit, this, ID_Quit);
+	Bind(wxEVT_MENU, &MyFrame::OnOpen, this, ID_Open);
+	Bind(wxEVT_MENU, &MyFrame::OnAbout, this, ID_About);
+	Bind(wxEVT_PAINT, &MyFrame::OnPaint, this);
 }
 
 MyFrame::~MyFrame()
@@ -111,3 +115,9 @@ void MyFrame::OnOpen(wxCommandEvent& event)
 	m_sciter->load_file(path.ToStdWstring().c_str());
 	this->SetStatusText(dlg.GetPath());
 }
+
+void MyFrame::OnPaint(wxPaintEvent& event)
+{
+	int a = 100;
+}
+

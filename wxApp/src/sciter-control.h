@@ -9,7 +9,7 @@ class wxSciterControl :
 	protected sciter::event_handler_raw
 {
 	friend struct sciter::host<wxSciterControl>;
-	DECLARE_EVENT_TABLE();
+	
 	DECLARE_DYNAMIC_CLASS(wxSciterControl);
 public:
 
@@ -29,14 +29,10 @@ protected:
 	// Common initialization
 	void Init();
 
-	void AdjustToParent();
-
-	// Overrides
-	wxSize DoGetBestSize() const;
-
 	// Event handlers
 	void OnSize(wxSizeEvent& evt);
 	void OnShow(wxShowEvent& evt);
+	void OnPaint(wxPaintEvent& event);
 
 	// sciter:host
 	HWINDOW get_hwnd() const { return m_hwnd; }

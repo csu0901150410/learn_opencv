@@ -100,8 +100,12 @@ namespace sciter
             // 通知窗口绘制
 			if (this_hwnd)
             {
-				::InvalidateRect(this_hwnd, nullptr, TRUE); // 标记整个窗口为脏区
-				::UpdateWindow(this_hwnd);                  // 立即发送WM_PAINT
+				//::InvalidateRect(this_hwnd, nullptr, TRUE); // 标记整个窗口为脏区
+				//::UpdateWindow(this_hwnd);                  // 立即发送WM_PAINT
+
+                // 只能用InvalidateRect将重绘消息放入消息队列，UpdateWindow会跳过
+                // 消息队列直接到窗口过程，造成重绘竞争
+                ::InvalidateRect(this_hwnd, nullptr, TRUE);
 			}
 
 			return true;

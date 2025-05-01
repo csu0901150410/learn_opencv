@@ -5,11 +5,6 @@
 #include "sciter-control.h"
 #include <sciter-x-debug.h>
 
-BEGIN_EVENT_TABLE(wxSciterControl, wxControl)
-EVT_SIZE(wxSciterControl::OnSize)
-EVT_SHOW(wxSciterControl::OnShow)
-END_EVENT_TABLE();
-
 IMPLEMENT_DYNAMIC_CLASS(wxSciterControl, wxControl);
 
 wxSciterControl::wxSciterControl(wxWindow* parent, wxWindowID id)
@@ -73,34 +68,9 @@ bool wxSciterControl::Create(wxWindow* parent, wxWindowID id, const wxPoint& pos
 
 void wxSciterControl::Init()
 {
-
-}
-
-void wxSciterControl::AdjustToParent()
-{
-	if (!GetParent() || !m_hwnd)
-        return;
-            
-	wxSize parentClientSize = GetParent()->GetClientSize();
-	
-	// 先隐藏窗口
-	ShowWindow(m_hwnd, SW_HIDE);
-	
-	// 调整大小和位置
-	SetSize(0, 0, parentClientSize.GetWidth(), parentClientSize.GetHeight());
-        
-#ifdef __WINDOWS__
-	RECT rc = { 0, 0, parentClientSize.GetWidth(), parentClientSize.GetHeight() };
-	SetWindowPos(m_hwnd, nullptr, rc.left, rc.top, rc.right, rc.bottom, SWP_NOZORDER);
-	
-	// 重新显示窗口
-	ShowWindow(m_hwnd, SW_SHOW);
-#endif
-}
-
-wxSize wxSciterControl::DoGetBestSize() const
-{
-	return this->GetClientSize();
+	Bind(wxEVT_SIZE, &wxSciterControl::OnSize, this);
+	Bind(wxEVT_SHOW, &wxSciterControl::OnShow, this);
+	Bind(wxEVT_PAINT, &wxSciterControl::OnPaint, this);
 }
 
 void wxSciterControl::OnSize(wxSizeEvent& evt)
@@ -110,9 +80,6 @@ void wxSciterControl::OnSize(wxSizeEvent& evt)
  #ifdef __WINDOWS__
  	SetWindowPos(m_hwnd, nullptr, rc.GetX(), rc.GetY(), rc.GetWidth(), rc.GetHeight(), SWP_NOZORDER);
  #endif
-
-	/*AdjustToParent();
-    evt.Skip();*/
 }
 
 void wxSciterControl::OnShow(wxShowEvent& evt)
@@ -120,6 +87,11 @@ void wxSciterControl::OnShow(wxShowEvent& evt)
 #ifdef __WINDOWS__
 	ShowWindow(m_hwnd, evt.IsShown() ? SW_SHOW : SW_HIDE);
 #endif
+}
+
+void wxSciterControl::OnPaint(wxPaintEvent& event)
+{
+	int a = 100;
 }
 
 sciter::dom::element wxSciterControl::get_root() const

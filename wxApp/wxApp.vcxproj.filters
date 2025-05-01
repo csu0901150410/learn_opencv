@@ -12,12 +12,18 @@
     <ClCompile Include="src\sciter-control.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\3rdparty\sciter\include\sciter-win-main.cpp">
+    <ClCompile Include="src\wxOcvWindow.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sciter-control.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stdafx.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\targetver.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,0 +1,53 @@
+
+html {
+    background: transparent;
+    font: system;
+    color: #ddd;
+}
+
+body {
+    flow: horizontal;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    horizontal-align: center;
+    vertical-align: middle;
+}
+
+body > div:nth-child(1) {
+    width: 100dip;
+    height: *;
+    background: #879654;
+}
+
+body > div:nth-child(2) {
+    width: *;
+    height: *;
+    background: #000000;
+}
+
+button {
+    min-width: max-content;
+    width: 80dip;
+    padding-top: 4dip;
+    padding-bottom: 4dip;
+}
+
+div {
+    flow: vertical;
+}
+
+#ocv-pannel {
+    flow: horizontal;
+    width: *;
+    height: *;
+    border-spacing: 16px;
+    background: grey;
+}
+
+div.ocv-window {
+    behavior: wxOcvWindow;
+    display: block;
+    size: *;
+    border: 1dip solid;
+}

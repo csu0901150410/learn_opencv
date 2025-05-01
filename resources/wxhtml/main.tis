@@ -1,0 +1,7 @@
+
+
+function self.ready() {
+}
+
+function on_dom_load() {
+}
