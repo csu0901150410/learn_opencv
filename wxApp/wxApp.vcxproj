@@ -108,15 +108,17 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;SKIP_MAIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(CPP_LIBS)\wxWidgets\include;$(CPP_LIBS)\wxWidgets\include\msvc;../3rdparty/sciter/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_LIBS)\wxWidgets\include;$(CPP_LIBS)\wxWidgets\include\msvc;$(CPP_LIBS)\opencv\build\include;../3rdparty/sciter/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(CPP_LIBS)\wxWidgets\lib\vc_x64_lib;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(CPP_LIBS)\wxWidgets\lib\vc_x64_lib;$(CPP_LIBS)\opencv\build\x64\vc16\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_world490d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "..\3rdparty\sciter\bin\x64\sciter.dll" "$(SolutionDir)build\" /s /e /i /d /y</Command>
+      <Command>xcopy "..\3rdparty\sciter\bin\x64\sciter.dll" "$(SolutionDir)build\" /s /e /i /d /y
+xcopy "$(CPP_LIBS)\opencv\build\x64\vc16\bin\opencv_world490d.dll" "$(SolutionDir)build\" /s /e /i /d /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

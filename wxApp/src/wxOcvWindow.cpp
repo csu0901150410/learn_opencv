@@ -27,11 +27,14 @@ private:
 
 		wxSize size = GetClientSize();
 
-		dc.SetBrush(wxBrush(wxColour(255, 0, 0)));
+		/*dc.SetBrush(wxBrush(wxColour(255, 0, 0)));
 		dc.DrawRectangle(0, 0, size.x, size.y);
 
 		dc.SetBrush(wxBrush(wxColour(0, 0, 255)));
-		dc.DrawRectangle(40, 40, size.x - 80, size.y - 80);
+		dc.DrawRectangle(40, 40, size.x - 80, size.y - 80);*/
+
+		dc.SetBrush(*wxBLACK_BRUSH);
+		dc.DrawRectangle(0, 0, size.x, size.y);
 	}
 };
 
@@ -59,17 +62,35 @@ struct native_ocvwindow_wx : public sciter::event_handler
 
 	virtual void attached(HELEMENT he) override
 	{
-		HWND sciterHwnd = sciter::dom::element(he).get_element_hwnd(true);
+		// 这里的关键问题在于，往sciter元素挂载wxWidgets窗口的时候，需要先把wxWidgets
+		// 窗口创建出来，这需要指定父窗口指针，但是这时候只能通过元素获取父窗口的句柄，那么
+		// 就需要根据父窗口的句柄表示得到wxWidgets窗口指针表示。
+		// 目前的方案，使用了windows系统实现类中的SetHWND方法，并不通用。
 
-		parentWindow = new wxNativeWindow();
-		parentWindow->SetHWND((WXHWND)sciterHwnd);
-		parentWindow->AdoptAttributesFromHWND();
+		HWINDOW sciterHwnd = sciter::dom::element(he).get_element_hwnd(true);
 
+		// 根据元素句柄创建一个能够包含其他wx窗口的窗口作为父窗口
+		if (!parentWindow)
+		{
+			parentWindow = new wxNativeWindow();
+			parentWindow->SetHWND((WXHWND)sciterHwnd);
+		}
+
+		// 根据元素父窗口创建ocv子窗口
 		window = new wxOcvWindow(parentWindow);
-		window->Show();
+		if (window)
+		{
+			window->SetSize(parentWindow->GetClientSize());
+			window->Show();
+		}
 	}
 
 	virtual void detached(HELEMENT he) override
+	{
+		dispose();
+	}
+
+	void dispose()
 	{
 		// 释放wxWidgets持有的资源
 		if (window)
@@ -88,6 +109,12 @@ struct native_ocvwindow_wx : public sciter::event_handler
 		asset_release();
 	}
 
+	virtual bool handle_event(HELEMENT he, BEHAVIOR_EVENT_PARAMS& params) override
+	{
+		std::wstring name = params.name;
+		return true;
+	}
+
 	virtual bool handle_draw(HELEMENT he, DRAW_PARAMS& params) override
 	{
 		if (DRAW_CONTENT != params.cmd || !window)
@@ -99,10 +126,13 @@ struct native_ocvwindow_wx : public sciter::event_handler
 
 	virtual void handle_size(HELEMENT he) override
 	{
-		sciter::dom::element el = sciter::dom::element(he);
-		RECT rc = el.get_location(ROOT_RELATIVE | CONTENT_BOX);
-		window->SetSize(rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top);
-		window->update_content();
+		if (window)
+		{
+			sciter::dom::element el = sciter::dom::element(he);
+			RECT rc = el.get_location(ROOT_RELATIVE | CONTENT_BOX);
+			window->SetSize(rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top);
+			window->update_content();
+		}
 	}
 };
 
