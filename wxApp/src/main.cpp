@@ -39,7 +39,7 @@ IMPLEMENT_APP(MyApp);
 bool MyApp::OnInit()
 {
 	SciterClassName();
-	MyFrame* frame = new MyFrame("Sciter integration for wxWidgets", wxPoint(50, 50), wxSize(1920, 1080));
+	MyFrame* frame = new MyFrame("Sciter integration for wxWidgets", wxPoint(50, 50), wxSize(1080, 600));
 
 	wxIcon icon;
 	icon.LoadFile("../resources/images/icons/app.ico", wxBITMAP_TYPE_ICO);

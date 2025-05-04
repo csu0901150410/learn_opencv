@@ -4,11 +4,59 @@
 #include "sciter-x-behavior.h"
 #include "sciter-x-dom.hpp"
 
+#include <opencv2/opencv.hpp>
+#include <mutex>
+
+#include "convertmattowxbmp.h"
+
+struct lsOcvImageModel
+{
+	cv::Mat original;
+
+	std::mutex mtx;
+	
+	// 不同的图像处理过程
+	cv::Mat get_processed_view(int viewid)
+	{
+		std::lock_guard<std::mutex> lock(mtx);
+		cv::Mat result;
+
+		switch (viewid)
+		{
+		case 0:
+		{
+			result = original.clone();
+		}
+		break;
+
+		case 1:
+		{
+			cv::cvtColor(original, result, cv::COLOR_BGR2GRAY);
+		}
+		break;
+
+		default:
+			result = original.clone();
+		}
+
+		return result;
+	}
+};
+
+typedef std::shared_ptr<lsOcvImageModel> lsOcvImageModelPtr;
+
+lsOcvImageModelPtr create_object()
+{
+	return std::make_shared<lsOcvImageModel>();
+}
+
 class wxOcvWindow : public wxPanel
 {
 public:
-	wxOcvWindow(wxWindow* parent)
+	wxOcvWindow(wxWindow* parent, lsOcvImageModelPtr model, int viewid)
 		: wxPanel(parent, wxID_ANY)
+		, model(model)
+		, viewid(viewid)
 	{
 		SetBackgroundStyle(wxBG_STYLE_PAINT);
 
@@ -35,19 +83,63 @@ private:
 
 		dc.SetBrush(*wxBLACK_BRUSH);
 		dc.DrawRectangle(0, 0, size.x, size.y);
+
+		render_image(dc);
 	}
+
+	wxBitmap mat2bitmap(const cv::Mat& mat) const
+	{
+		if (mat.empty())
+			return wxBitmap();
+
+		// wxBitmap的宽高应该初始化为和Mat一致，且深度为24
+		wxBitmap bitmap(mat.cols, mat.rows, 24);
+		bool bSuccess = ConvertMatBitmapTowxBitmap(mat, bitmap);
+		if (!bSuccess)
+			return wxBitmap();
+
+		// 返回wxBitmap
+		return bitmap;
+	}
+
+	void render_image(wxDC& dc)
+	{
+		if (!model)
+			return;
+
+		cv::Mat img = model->get_processed_view(viewid);
+		if (img.empty())
+			return;
+
+		wxBitmap bmp = mat2bitmap(img);
+
+		wxSize clientSize = dc.GetSize();
+		wxSize bmpSize = bmp.GetSize();
+
+		int posX = (clientSize.GetWidth() - bmpSize.GetWidth()) / 2;
+		int posY = (clientSize.GetHeight() - bmpSize.GetHeight()) / 2;
+
+		dc.DrawBitmap(bmp, posX, posY, false);
+	}
+
+private:
+	lsOcvImageModelPtr model;
+	int viewid;
 };
 
 struct native_ocvwindow_wx : public sciter::event_handler
 {
 	wxOcvWindow* window = nullptr;
 	wxWindow* parentWindow = nullptr;
+	lsOcvImageModelPtr model = nullptr;
 
 	// ctor
 	native_ocvwindow_wx()
 		: window(nullptr)
 		, parentWindow(nullptr)
 	{
+		model = create_object();
+		model->original = cv::imread("../resources/images/wxWidgets-logo.png");
 	}
 
 	virtual ~native_ocvwindow_wx()
@@ -77,7 +169,7 @@ struct native_ocvwindow_wx : public sciter::event_handler
 		}
 
 		// 根据元素父窗口创建ocv子窗口
-		window = new wxOcvWindow(parentWindow);
+		window = new wxOcvWindow(parentWindow, model, 0);
 		if (window)
 		{
 			window->SetSize(parentWindow->GetClientSize());
