@@ -33,6 +33,7 @@ protected:
 	void OnSize(wxSizeEvent& evt);
 	void OnShow(wxShowEvent& evt);
 	void OnPaint(wxPaintEvent& event);
+	void OnKeyDown(wxKeyEvent& event);
 
 	// sciter:host
 	HWINDOW get_hwnd() const { return m_hwnd; }

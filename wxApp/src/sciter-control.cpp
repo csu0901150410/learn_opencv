@@ -71,6 +71,7 @@ void wxSciterControl::Init()
 	Bind(wxEVT_SIZE, &wxSciterControl::OnSize, this);
 	Bind(wxEVT_SHOW, &wxSciterControl::OnShow, this);
 	Bind(wxEVT_PAINT, &wxSciterControl::OnPaint, this);
+	Bind(wxEVT_KEY_DOWN, &wxSciterControl::OnKeyDown, this);
 }
 
 void wxSciterControl::OnSize(wxSizeEvent& evt)
@@ -92,6 +93,13 @@ void wxSciterControl::OnShow(wxShowEvent& evt)
 void wxSciterControl::OnPaint(wxPaintEvent& event)
 {
 	int a = 100;
+}
+
+void wxSciterControl::OnKeyDown(wxKeyEvent& event)
+{
+	// 底层的键盘事件由wxWidgets监听，转发给sciter
+	::PostMessage(m_hwnd, WM_KEYDOWN, (WPARAM)event.GetKeyCode(), 0);
+	event.Skip();
 }
 
 sciter::dom::element wxSciterControl::get_root() const
