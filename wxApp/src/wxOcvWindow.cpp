@@ -9,6 +9,13 @@
 
 #include "convertmattowxbmp.h"
 
+#ifdef WINDOWS
+#ifndef THIS_HINSTANCE
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#define THIS_HINSTANCE ((HINSTANCE)&__ImageBase)
+#endif
+#endif
+
 struct lsOcvImageModel
 {
 	cv::Mat original;
@@ -53,14 +60,16 @@ lsOcvImageModelPtr create_object()
 class wxOcvWindow : public wxPanel
 {
 public:
-	wxOcvWindow(wxWindow* parent, lsOcvImageModelPtr model, int viewid)
+	wxOcvWindow(wxWindow* parent, lsOcvImageModelPtr model, int viewid, HELEMENT he)
 		: wxPanel(parent, wxID_ANY)
 		, model(model)
 		, viewid(viewid)
+		, he(he)
 	{
 		SetBackgroundStyle(wxBG_STYLE_PAINT);
 
 		Bind(wxEVT_PAINT, &wxOcvWindow::OnPaint, this);
+		Bind(wxEVT_RIGHT_DOWN, &wxOcvWindow::OnMouse, this);
 	}
 
 	void update_content()
@@ -85,6 +94,37 @@ private:
 		dc.DrawRectangle(0, 0, size.x, size.y);
 
 		render_image(dc);
+	}
+
+	void OnMouse(wxMouseEvent& event)
+	{
+		if (wxEVT_RIGHT_DOWN == event.GetEventType())
+		{
+			if (he)
+			{
+				// 向该元素发送右键事件
+				//SciterPostEvent(he, CONTEXT_MENU_REQUEST, he, CLICK_REASON::BY_MOUSE_CLICK);
+
+				// 向父级窗口发送原始鼠标事件
+				sciter::dom::element self = sciter::dom::element::element(he);
+				HELEMENT root = self.root();
+
+				sciter::dom::element parent = sciter::dom::element::element(root);
+
+				HWND sciterHwnd = parent.get_element_hwnd(true);
+				if (!sciterHwnd)
+					return;
+
+				wxPoint globalPt = ::wxGetMousePosition();
+				POINT pt = { globalPt.x, globalPt.y };
+				::ScreenToClient(sciterHwnd, &pt);
+
+				LPARAM lParam = MAKELPARAM(pt.x, pt.y);
+				WPARAM wParam = MK_RBUTTON;
+
+				::PostMessage(sciterHwnd, WM_RBUTTONDOWN, wParam, lParam);
+			}
+		}
 	}
 
 	wxBitmap mat2bitmap(const cv::Mat& mat) const
@@ -125,6 +165,7 @@ private:
 private:
 	lsOcvImageModelPtr model;
 	int viewid;
+	HELEMENT he;
 };
 
 struct native_ocvwindow_wx : public sciter::event_handler
@@ -137,6 +178,7 @@ struct native_ocvwindow_wx : public sciter::event_handler
 	native_ocvwindow_wx()
 		: window(nullptr)
 		, parentWindow(nullptr)
+		, model(nullptr)
 	{
 		model = create_object();
 		model->original = cv::imread("../resources/images/wxWidgets-logo.png");
@@ -169,11 +211,14 @@ struct native_ocvwindow_wx : public sciter::event_handler
 		}
 
 		// 根据元素父窗口创建ocv子窗口
-		window = new wxOcvWindow(parentWindow, model, 0);
+		window = new wxOcvWindow(parentWindow, model, 0, he);
 		if (window)
 		{
 			window->SetSize(parentWindow->GetClientSize());
 			window->Show();
+
+			sciter::dom::element self = sciter::dom::element::element(he);
+			self.attach_hwnd((HWINDOW)window->GetHandle());
 		}
 	}
 
@@ -201,18 +246,15 @@ struct native_ocvwindow_wx : public sciter::event_handler
 		asset_release();
 	}
 
-	virtual bool handle_event(HELEMENT he, BEHAVIOR_EVENT_PARAMS& params) override
-	{
-		std::wstring name = params.name;
-		return true;
-	}
-
 	virtual bool handle_draw(HELEMENT he, DRAW_PARAMS& params) override
 	{
 		if (DRAW_CONTENT != params.cmd || !window)
 			return false;
 
-		window->update_content();
+		if (window)
+		{
+			window->update_content();
+		}
 		return true;
 	}
 

@@ -12,9 +12,27 @@
 
 <body>
     <div #ocv-pannel>
-        <div #ocv-orig .ocv-window />
-        <div #ocv-binary .ocv-window />
+        <div #ocv-orig .ocv-window class="with-context-menu" />
+        <!--div #ocv-binary .ocv-window class="with-context-menu" /-->
+        <!--div style="width:*;height:*;" class="with-context-menu" /-->
     </div>
+
+    <popup>
+        <menu.context id="context">
+            <li id="i1">灰度图</li>
+            <li id="i2">二值化</li>
+            <li id="i3">直方图</li>
+
+            <!-- 子菜单 -->
+            <li>
+                图像变换
+                <menu>
+                    <li id="i5">旋转</li>
+                    <li id="i6">缩放</li>
+                </menu>
+            </li>
+        </menu>
+    </popup>
 </body>
 
 </html>

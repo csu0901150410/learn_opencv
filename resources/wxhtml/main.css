@@ -51,3 +51,11 @@ div.ocv-window {
     size: *;
     border: 1dip solid;
 }
+
+menu {
+    width: max-intrinsic;
+}
+
+.with-context-menu {
+    context-menu: selector(menu#context);
+}
