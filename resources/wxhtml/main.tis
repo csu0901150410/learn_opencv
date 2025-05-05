@@ -1,7 +1,25 @@
 
 
 function self.ready() {
+    on_dom_load();
 }
 
 function on_dom_load() {
+    $(#context-menu-gray).subscribe("click", on_gray_click);
+}
+
+var sub_toolwindow = null;
+
+function on_gray_click() {
+    stdout << "on_gray_click\n";
+
+    sub_toolwindow = view.window{
+        type: View.TOOL_WINDOW,
+        url: self.url("toolwindows/grayscale/grayscale.htm"),
+        //x: 100,
+        //y: 100,
+        width: 640,
+        height: 480,
+        alignment: 5
+    };
 }

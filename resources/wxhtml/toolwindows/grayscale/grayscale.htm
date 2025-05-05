@@ -1,0 +1,30 @@
+<html window-resizable>
+    <head>
+        <title>灰度图</title>
+        <style></style>
+        <script type="text/tiscript">
+
+            function self.ready() {
+                // we do post here as window is still in construction phase. Just to avoid needless draws
+                this.post(::view.state = View.WINDOW_SHOWN);
+            }
+
+            function self.closing(reason) {
+                stdout << String.printf("Closing, reason: %s\n", reason);
+            }
+
+            $(input).on("keydown", function(evt){
+                stdout.println(evt.keyCode);
+            });
+
+        </script>
+    </head>
+
+    <body>
+        <h1>Grayscale</h1>
+        <div style="flow: horizontal;border-spacing: 16px;">
+            <label style="vertical-align: middle;">浮点数</label>
+            <input |decimal value="0.5" style="width: *;">
+        </div>
+    </body>
+</html>
