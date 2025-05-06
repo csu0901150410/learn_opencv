@@ -6,13 +6,14 @@ function self.ready() {
 
 function on_dom_load() {
     $(#context-menu-gray).subscribe("click", on_gray_click);
+
+    // 窗口加载时就打开新窗口
+    // open_window();
 }
 
 var sub_toolwindow = null;
 
-function on_gray_click() {
-    stdout << "on_gray_click\n";
-
+function open_window() {
     sub_toolwindow = view.window{
         type: View.TOOL_WINDOW,
         url: self.url("toolwindows/grayscale/grayscale.htm"),
@@ -23,3 +24,14 @@ function on_gray_click() {
         alignment: 5
     };
 }
+
+function on_gray_click() {
+    stdout << "on_gray_click\n";
+
+    open_window();
+}
+
+$(#main-input).on("keydown", function(evt){
+    stdout.println("main-input");
+    stdout.println(evt.keyCode);
+});
