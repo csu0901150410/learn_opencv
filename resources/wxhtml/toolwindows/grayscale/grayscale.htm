@@ -1,7 +1,9 @@
 <html window-resizable>
     <head>
         <title>灰度图</title>
-        <style></style>
+        <style>
+            @import url(grayscale.css);
+        </style>
         <script type="text/tiscript">
 
             function self.ready() {
@@ -22,9 +24,22 @@
 
     <body>
         <h1>Grayscale</h1>
-        <div style="flow: horizontal;border-spacing: 16px;">
-            <label style="vertical-align: middle;">浮点数</label>
-            <input |decimal value="0.5" style="width: *;">
+        <div .div-label-input>
+            <label>参数1</label>
+            <input |decimal value="0.5">
+        </div>
+        <div .div-label-input>
+            <label>参数2</label>
+            <input |decimal value="15">
+        </div>
+        <div .div-label-input>
+            <label>参数3</label>
+            <input |decimal value="50">
+        </div>
+
+        <div .div-bottom-buttons>
+            <button>确认</button>
+            <button>取消</button>
         </div>
     </body>
 </html>

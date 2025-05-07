@@ -6,15 +6,9 @@
 
 #include <opencv2/opencv.hpp>
 #include <mutex>
+#include <wx/dcbuffer.h>
 
 #include "convertmattowxbmp.h"
-
-#ifdef WINDOWS
-#ifndef THIS_HINSTANCE
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-#define THIS_HINSTANCE ((HINSTANCE)&__ImageBase)
-#endif
-#endif
 
 struct lsOcvImageModel
 {
@@ -57,6 +51,7 @@ lsOcvImageModelPtr create_object()
 	return std::make_shared<lsOcvImageModel>();
 }
 
+// 挂载到sciter元素上的wxWidgets窗口
 class wxOcvWindow : public wxPanel
 {
 public:
@@ -68,8 +63,22 @@ public:
 	{
 		SetBackgroundStyle(wxBG_STYLE_PAINT);
 
+		cap.open(0);
+
+		// 定时器的方式会导致窗口最大化之后无法立即响应关闭按钮
+		// 可以参考 https://github.com/PBfordev/wxopencvtest 中采用线程获取相机图像的方式
+		timer.Bind(wxEVT_TIMER, &wxOcvWindow::OnTimer, this);
+		timer.Start(33);
+
 		Bind(wxEVT_PAINT, &wxOcvWindow::OnPaint, this);
 		Bind(wxEVT_RIGHT_DOWN, &wxOcvWindow::OnMouse, this);
+	}
+
+	~wxOcvWindow()
+	{
+		timer.Stop();
+		if (cap.isOpened())
+			cap.release();
 	}
 
 	void update_content()
@@ -80,20 +89,30 @@ public:
 private:
 	void OnPaint(wxPaintEvent& event)
 	{
-		wxPaintDC dc(this);
+		wxBufferedPaintDC dc(this);
+		PrepareDC(dc);
 
-		wxSize size = GetClientSize();
+		dc.SetBackground(*wxBLACK_BRUSH);
+		dc.Clear();
 
-		/*dc.SetBrush(wxBrush(wxColour(255, 0, 0)));
-		dc.DrawRectangle(0, 0, size.x, size.y);
+		cv::Mat frame;
+		{
+			std::lock_guard<std::mutex> lock(frameMutex);
+			if (currentFrame.empty())
+			{
+				// 绘制黑色背景（无画面时）
+				dc.SetBackground(*wxBLACK_BRUSH);
+				dc.Clear();
+				return;
+			}
+			frame = currentFrame.clone();
+		}
 
-		dc.SetBrush(wxBrush(wxColour(0, 0, 255)));
-		dc.DrawRectangle(40, 40, size.x - 80, size.y - 80);*/
-
-		dc.SetBrush(*wxBLACK_BRUSH);
-		dc.DrawRectangle(0, 0, size.x, size.y);
-
-		render_image(dc);
+		// 计算居中绘制的起始坐标
+		wxSize clientSize = GetClientSize();
+		int offsetX = (clientSize.GetWidth() - prepareBitmap.GetWidth()) / 2;
+		int offsetY = (clientSize.GetHeight() - prepareBitmap.GetHeight()) / 2;
+		dc.DrawBitmap(prepareBitmap, offsetX, offsetY, false);
 	}
 
 	void OnMouse(wxMouseEvent& event)
@@ -123,6 +142,40 @@ private:
 				WPARAM wParam = MK_RBUTTON;
 
 				::PostMessage(sciterHwnd, WM_RBUTTONDOWN, wParam, lParam);
+			}
+		}
+	}
+
+	void OnTimer(wxTimerEvent& event)
+	{
+		cv::Mat frame;
+		if (cap.isOpened())
+		{
+			if (cap.read(frame))
+			{
+				std::lock_guard<std::mutex> lock(frameMutex);
+
+				wxSize clientSize = GetClientSize();
+				wxSize imgSize(frame.cols, frame.rows);
+
+				// 计算保持宽高比的缩放比例
+				double scaleX = static_cast<double>(clientSize.GetWidth()) / imgSize.GetWidth();
+				double scaleY = static_cast<double>(clientSize.GetHeight()) / imgSize.GetHeight();
+				double scale = std::min(scaleX, scaleY);
+
+				// 缩放后的图像尺寸
+				wxSize drawSize(static_cast<int>(imgSize.GetWidth() * scale),
+					static_cast<int>(imgSize.GetHeight() * scale));
+
+				// 缩放图像
+				cv::Mat resized;
+				cv::resize(frame, resized, cv::Size(drawSize.GetWidth(), drawSize.GetHeight()));
+
+				prepareBitmap = mat2bitmap(resized);
+
+				resized.copyTo(currentFrame);
+
+				Refresh(false);
 			}
 		}
 	}
@@ -166,8 +219,15 @@ private:
 	lsOcvImageModelPtr model;
 	int viewid;
 	HELEMENT he;
+
+	cv::VideoCapture cap;
+	wxTimer timer;
+	cv::Mat currentFrame;
+	wxBitmap prepareBitmap;
+	std::mutex frameMutex;
 };
 
+// 自定义事件处理器，在挂载事件中挂载wxWidgets窗口
 struct native_ocvwindow_wx : public sciter::event_handler
 {
 	wxOcvWindow* window = nullptr;
@@ -270,6 +330,7 @@ struct native_ocvwindow_wx : public sciter::event_handler
 	}
 };
 
+// 自定义的behavior工厂类，可以将自定义的事件处理器挂到全局链表上，以便ui元素按键查找并附加事件处理器
 struct native_ocvwindow_wx_factory : public sciter::behavior_factory
 {
 	native_ocvwindow_wx_factory()

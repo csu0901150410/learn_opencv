@@ -1,0 +1,41 @@
+body {
+    background: #333333;
+    color: #F0F0F0;
+    padding: 0;
+    margin: 0;
+}
+
+.div-label-input {
+    flow: horizontal;
+    border-spacing: 12px;
+    padding: 4px;
+}
+
+.div-label-input > label {
+    vertical-align: middle;
+}
+
+.div-label-input > input {
+    width: *;
+}
+
+input {
+    background: #636363;
+    border-radius: 2px;
+    color: #F0F0F0;
+    text-selection-caret-color: window-accent-text-color;
+}
+
+.div-bottom-buttons {
+    flow: horizontal;
+    border-spacing: 12px;
+    padding: 4px;
+}
+
+.div-bottom-buttons > button {
+    width: *;
+}
+
+button {
+    border-radius: 6px;
+}
