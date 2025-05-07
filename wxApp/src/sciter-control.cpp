@@ -97,9 +97,12 @@ void wxSciterControl::OnPaint(wxPaintEvent& event)
 
 void wxSciterControl::OnKeyDown(wxKeyEvent& event)
 {
-	// 很简陋，无法区分小键盘，无法输入小数点
-	// 底层的键盘事件由wxWidgets监听，转发给sciter
-	::PostMessage(m_hwnd, WM_KEYDOWN, (WPARAM)event.GetKeyCode(), 0);
+	// 获取原始虚拟键码
+	WPARAM vkCode = static_cast<WPARAM>(event.GetRawKeyCode());
+	// 构造简化的lParam
+	LPARAM lParam = (0x00000001 | (MapVirtualKey(vkCode, MAPVK_VK_TO_VSC) << 16));
+
+	::PostMessage(m_hwnd, WM_KEYDOWN, vkCode, lParam);
 	event.Skip();
 }
 
