@@ -139,13 +139,16 @@ xcopy "$(CPP_LIBS)\opencv\build\x64\vc16\bin\opencv_world490d.dll" "$(SolutionDi
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\convertmattowxbmp.cpp" />
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\sciter-control.cpp" />
+    <ClCompile Include="src\lsApp.cpp" />
+    <ClCompile Include="src\lsMainFrame.cpp" />
+    <ClCompile Include="src\wxSciterControl.cpp" />
     <ClCompile Include="src\wxOcvWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\convertmattowxbmp.h" />
-    <ClInclude Include="src\sciter-control.h" />
+    <ClInclude Include="src\lsApp.h" />
+    <ClInclude Include="src\lsMainFrame.h" />
+    <ClInclude Include="src\wxSciterControl.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\targetver.h" />
   </ItemGroup>

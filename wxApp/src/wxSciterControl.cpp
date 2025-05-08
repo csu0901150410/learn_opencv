@@ -2,7 +2,7 @@
 #include <wx/control.h>
 #include <wx/gdicmn.h>
 
-#include "sciter-control.h"
+#include "wxSciterControl.h"
 #include <sciter-x-debug.h>
 
 IMPLEMENT_DYNAMIC_CLASS(wxSciterControl, wxControl);

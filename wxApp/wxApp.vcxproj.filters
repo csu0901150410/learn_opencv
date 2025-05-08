@@ -6,10 +6,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\sciter-control.cpp">
+    <ClCompile Include="src\wxSciterControl.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\wxOcvWindow.cpp">
@@ -18,9 +15,15 @@
     <ClCompile Include="src\convertmattowxbmp.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\lsApp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lsMainFrame.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\sciter-control.h">
+    <ClInclude Include="src\wxSciterControl.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h">
@@ -30,6 +33,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\convertmattowxbmp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lsMainFrame.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lsApp.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
