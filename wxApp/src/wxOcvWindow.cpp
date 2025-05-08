@@ -1,4 +1,4 @@
-#include <wx/wx.h>
+﻿#include <wx/wx.h>
 #include <wx/nativewin.h>
 #include "sciter-x.h"
 #include "sciter-x-behavior.h"
