@@ -3,6 +3,10 @@
 #include <wx/control.h>
 #include <sciter-x-window.hpp>
 
+#include <unordered_set>
+
+class wxOcvWindow;
+
 class wxSciterControl :
 	public wxControl,
 	public sciter::host<wxSciterControl>,
@@ -42,4 +46,12 @@ protected:
 protected:
 	HWINDOW m_hwnd;
 	mutable sciter::dom::element m_root;
+
+public:
+	void register_ocvwindow(wxOcvWindow* window);
+	void unregister_ocvwindow(wxOcvWindow* window);
+	void update_ocvwindow(const wxBitmap& bitmap);
+
+private:
+	std::unordered_set<wxOcvWindow*> m_ocvwindows;
 };

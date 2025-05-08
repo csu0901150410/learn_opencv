@@ -9,9 +9,6 @@
     <ClCompile Include="src\wxSciterControl.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\wxOcvWindow.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\convertmattowxbmp.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -19,6 +16,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\lsMainFrame.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wxOcvWindow.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -39,6 +39,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\lsApp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\wxOcvWindow.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

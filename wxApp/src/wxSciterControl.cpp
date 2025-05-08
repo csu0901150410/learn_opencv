@@ -5,6 +5,8 @@
 #include "wxSciterControl.h"
 #include <sciter-x-debug.h>
 
+#include "wxOcvWindow.h"
+
 IMPLEMENT_DYNAMIC_CLASS(wxSciterControl, wxControl);
 
 wxSciterControl::wxSciterControl(wxWindow* parent, wxWindowID id)
@@ -46,6 +48,9 @@ bool wxSciterControl::Create(wxWindow* parent, wxWindowID id, const wxPoint& pos
 		// Setup sciter callbacks
 		setup_callback();
 		sciter::attach_dom_event_handler(m_hwnd, this);
+
+		// wxSciterControl窗口指针存到sciter窗口中，以便后续注册挂载窗口
+		::SetWindowLongPtr(m_hwnd, GWLP_USERDATA, (LONG_PTR)(this));
 
 		// Adjust our window style to eliminate double edge 
 		if (this->HasFlag(wxBORDER_MASK)) {
@@ -104,6 +109,27 @@ void wxSciterControl::OnKeyDown(wxKeyEvent& event)
 
 	::PostMessage(m_hwnd, WM_KEYDOWN, vkCode, lParam);
 	event.Skip();
+}
+
+void wxSciterControl::register_ocvwindow(wxOcvWindow* window)
+{
+	m_ocvwindows.insert(window);
+}
+
+void wxSciterControl::unregister_ocvwindow(wxOcvWindow* window)
+{
+	if (!m_ocvwindows.count(window))
+		return;
+	m_ocvwindows.erase(window);
+}
+
+void wxSciterControl::update_ocvwindow(const wxBitmap& bitmap)
+{
+	for (auto wnd : m_ocvwindows)
+	{
+		if (wnd && wnd->IsShownOnScreen())
+			wnd->set_bitmap(bitmap);
+	}
 }
 
 sciter::dom::element wxSciterControl::get_root() const

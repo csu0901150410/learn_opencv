@@ -48,6 +48,7 @@ div {
 div.ocv-window {
     behavior: wxOcvWindow;
     display: block;
+    background: #000000;
     size: *;
     border: 1dip solid;
 }
