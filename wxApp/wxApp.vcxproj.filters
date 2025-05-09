@@ -4,6 +4,12 @@
     <Filter Include="src">
       <UniqueIdentifier>{ae9eee3a-973a-47e3-b916-15fa88376f81}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3rdparty">
+      <UniqueIdentifier>{583ca620-6d1a-4638-9b52-aa156660c64b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdparty\jsoncpp">
+      <UniqueIdentifier>{3efd9ec2-6878-4250-9377-050d4cf47158}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\wxSciterControl.cpp">
@@ -20,6 +26,21 @@
     </ClCompile>
     <ClCompile Include="src\wxOcvWindow.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lsRegister.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_command.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_reader.cpp">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_value.cpp">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_writer.cpp">
+      <Filter>3rdparty\jsoncpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -44,5 +65,46 @@
     <ClInclude Include="src\wxOcvWindow.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\lsRegister.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\allocator.h">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\assertions.h">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\config.h">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\forwards.h">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\json.h">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\json_features.h">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\reader.h">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\value.h">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\version.h">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\writer.h">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\jsoncpp\src\lib_json\json_tool.h">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\3rdparty\jsoncpp\src\lib_json\json_valueiterator.inl">
+      <Filter>3rdparty\jsoncpp</Filter>
+    </None>
   </ItemGroup>
 </Project>

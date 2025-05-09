@@ -1,4 +1,4 @@
-<html window-resizable>
+<html window-frame="transparent" window-resizable>
     <head>
         <title>灰度图</title>
         <style>
@@ -6,9 +6,13 @@
         </style>
         <script type="text/tiscript">
 
+            include "grayscale.tis";
+
             function self.ready() {
                 // we do post here as window is still in construction phase. Just to avoid needless draws
                 this.post(::view.state = View.WINDOW_SHOWN);
+
+                on_dom_load();
             }
 
             function self.closing(reason) {
@@ -23,23 +27,27 @@
     </head>
 
     <body>
-        <h1>Grayscale</h1>
+        <header>
+            <caption role="window-caption">Grayscale</caption>
+            <button role="window-close">X</button>
+        </header>
+
         <div .div-label-input>
-            <label>参数1</label>
-            <input |decimal value="0.5">
+            <label>R</label>
+            <input #param-red |decimal value="0.5">
         </div>
         <div .div-label-input>
-            <label>参数2</label>
-            <input |decimal value="15">
+            <label>G</label>
+            <input #param-green |decimal value="15">
         </div>
         <div .div-label-input>
-            <label>参数3</label>
-            <input |decimal value="50">
+            <label>B</label>
+            <input #param-blue |decimal value="50">
         </div>
 
         <div .div-bottom-buttons>
-            <button>确认</button>
-            <button>取消</button>
+            <button #btnConfirm>确认</button>
+            <button #btnCancel>取消</button>
         </div>
     </body>
 </html>

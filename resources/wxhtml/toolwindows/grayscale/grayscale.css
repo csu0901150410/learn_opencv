@@ -1,8 +1,14 @@
+html {
+    border-radius: 4px;
+    background: transparent;
+}
+
 body {
     background: #333333;
     color: #F0F0F0;
     padding: 0;
     margin: 0;
+    border-radius: 4px;
 }
 
 .div-label-input {
@@ -38,4 +44,20 @@ input {
 
 button {
     border-radius: 6px;
+}
+
+header {
+    flow: horizontal;
+    height: 24dip;
+    padding: 2px;
+    background:rgb(76, 113, 214);
+    vertical-align: middle;
+}
+
+header > caption {
+    width: *;
+}
+
+header > button:hover {
+    background: red;
 }

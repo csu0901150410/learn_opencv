@@ -60,3 +60,12 @@ menu {
 .with-context-menu {
     context-menu: selector(menu#context);
 }
+
+button {
+    border-radius: 6px;
+    height: 24dip;
+}
+
+input[type=text] {
+    height: 24dip;
+}

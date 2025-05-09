@@ -6,6 +6,7 @@
 #include <sciter-x-debug.h>
 
 #include "wxOcvWindow.h"
+#include "lsRegister.h"
 
 IMPLEMENT_DYNAMIC_CLASS(wxSciterControl, wxControl);
 
@@ -109,6 +110,48 @@ void wxSciterControl::OnKeyDown(wxKeyEvent& event)
 
 	::PostMessage(m_hwnd, WM_KEYDOWN, vkCode, lParam);
 	event.Skip();
+}
+
+std::string to_std_string(const sciter::string& str)
+{
+	aux::w2a auxstr(str.c_str());
+	return auxstr.c_str();
+}
+
+sciter::string to_sciter_string(const std::string& str)
+{
+	aux::a2w auxstr(str.c_str());
+	return auxstr.c_str();
+}
+
+bool wxSciterControl::handle_scripting_call(HELEMENT he, SCRIPTING_METHOD_PARAMS& params)
+{
+	aux::chars _name = aux::chars_of(params.name);
+
+	// 暴露给脚本的接口，脚本通过这个接口根据c++命令名字调用命令
+	if (const_chars("call_native") == _name)
+	{
+		std::string strName = to_std_string(params.argv[0].to_string());
+		std::string strParams = to_std_string(params.argv[1].to_string(CVT_JSON_LITERAL));
+
+		Json::Reader jsReader;
+		Json::Value jsParams;
+		if (!jsReader.parse(strParams, jsParams))
+		{
+			std::cerr << "json parse failed" << std::endl;
+			return false;
+		}
+
+		return script_call_native(strName, jsParams);
+	}
+
+	return true;
+}
+
+bool wxSciterControl::script_call_native(std::string& name, const Json::Value& params)
+{
+	bool ret = GET_REGISTERER_FUNCTION(name)(params);
+	return ret;
 }
 
 void wxSciterControl::register_ocvwindow(wxOcvWindow* window)

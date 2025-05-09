@@ -42,6 +42,8 @@ public:
 	void OnCameraEmpty(wxThreadEvent& event);
 	void OnCameraException(wxThreadEvent& event);
 
+	void OnTestCallScript(wxCommandEvent& event);
+
 	static wxBitmap ConvertMatToBitmap(const cv::Mat& matBitmap, long& timeConvert);
 
 	enum
@@ -51,6 +53,8 @@ public:
 		ID_Open,
 
 		ID_WebCam,
+
+		ID_TestCallScript,
 	};
 
 private:

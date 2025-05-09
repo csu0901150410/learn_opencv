@@ -86,14 +86,15 @@ bool lsApp::OnInit()
 	InstallKeyboardHook();
 
 	SciterClassName();
-	lsMainFrame* frame = new lsMainFrame("Sciter integration for wxWidgets", wxPoint(50, 50), wxSize(1080, 600));
+
+	m_mainframe = new lsMainFrame("Sciter integration for wxWidgets", wxPoint(50, 50), wxSize(1080, 600));
 
 	wxIcon icon;
 	icon.LoadFile("../resources/images/icons/app.ico", wxBITMAP_TYPE_ICO);
-	frame->SetIcon(icon);
+	m_mainframe->SetIcon(icon);
 
-	frame->Show(TRUE);
-	SetTopWindow(frame);
+	m_mainframe->Show(TRUE);
+	SetTopWindow(m_mainframe);
 	return TRUE;
 }
 
@@ -101,4 +102,41 @@ int lsApp::OnExit()
 {
 	UninstallKeyboardHook();
 	return wxApp::OnExit();
+}
+
+lsMainFrame* lsApp::get_mainframe()
+{
+	return m_mainframe;
+}
+
+// 调用脚本函数的api
+void call_script(const std::string& name)
+{
+	lsApp* app = dynamic_cast<lsApp*>(wxApp::GetInstance());
+	app->get_mainframe()->m_sciter->call_function(name.c_str());
+}
+
+std::wstring string_to_wstring(const std::string& str)
+{
+	if (str.empty())
+		return L"";
+
+	// 计算所需缓冲区大小
+	int len = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+	if (len == 0) return L"";
+
+	// 转换
+	std::wstring wstr(len, 0);
+	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wstr[0], len);
+	return wstr;
+}
+
+void call_script(const std::string& name, const Json::Value& params)
+{
+	lsApp* app = dynamic_cast<lsApp*>(wxApp::GetInstance());
+
+	std::string jsonstr = params.toStyledString();
+	SCITER_VALUE jsonval = SCITER_VALUE::from_string(string_to_wstring(jsonstr), CVT_JSON_LITERAL);
+
+	app->get_mainframe()->m_sciter->call_function(name.c_str(), jsonval);
 }

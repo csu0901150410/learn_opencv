@@ -19,8 +19,8 @@ function open_window() {
         url: self.url("toolwindows/grayscale/grayscale.htm"),
         //x: 100,
         //y: 100,
-        width: 640,
-        height: 480,
+        width: 286,
+        height: 324,
         alignment: 5
     };
 }
@@ -31,7 +31,23 @@ function on_gray_click() {
     open_window();
 }
 
-$(#main-input).on("keydown", function(evt){
-    stdout.println("main-input");
-    stdout.println(evt.keyCode);
+// $(#main-input).subscribe("keydown", function(evt) {
+//     stdout.println("main-input");
+//     stdout.println(evt.keyCode);
+// });
+
+
+// 点击按钮，脚本调用c++函数
+$(#btnTest).subscribe("click", function(evt) {
+    var params = {};
+    params["text"] = "script call native done...";
+    view.call_native("script_call_demo", params);
 });
+
+function script_set_text() {
+    $(#textTest).value = "native call script done...";
+}
+
+function native_set_text(text) {
+    $(#textTest).value = text;
+}

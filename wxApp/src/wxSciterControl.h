@@ -5,6 +5,8 @@
 
 #include <unordered_set>
 
+#include "lsRegister.h"
+
 class wxOcvWindow;
 
 class wxSciterControl :
@@ -42,6 +44,11 @@ protected:
 	// sciter:host
 	HWINDOW get_hwnd() const { return m_hwnd; }
 	HINSTANCE get_resource_instance() const { return NULL; }
+
+	virtual bool handle_scripting_call(HELEMENT he, SCRIPTING_METHOD_PARAMS& params) override;
+
+private:
+	bool script_call_native(std::string& name, const Json::Value& params);
 
 protected:
 	HWINDOW m_hwnd;

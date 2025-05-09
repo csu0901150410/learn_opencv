@@ -1,4 +1,4 @@
-<html window-resizable="true">
+<html window-resizable>
 
 <head>
     <title>Demo</title>
@@ -13,10 +13,15 @@
 <body>
     <div #ocv-pannel>
         <div #ocv-orig .ocv-window class="with-context-menu" />
-        <div #ocv-binary .ocv-window class="with-context-menu" />
+        <!--div #ocv-binary .ocv-window class="with-context-menu" /-->
         <!--div style="width:*;height:*;" class="with-context-menu">
             <input #main-input |decimal value="0.5" style="width: *;">
         </div-->
+    </div>
+
+    <div style="flow:horizontal;background:gray;">
+        <button #btnTest>Test call native...</button>
+        <input #textTest |text style="width:*;">
     </div>
 
     <popup>

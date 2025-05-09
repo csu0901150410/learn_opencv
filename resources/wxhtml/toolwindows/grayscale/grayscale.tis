@@ -1,0 +1,20 @@
+
+function on_confirm() {
+    var r = $(#param-red).value.toFloat();
+    var g = $(#param-green).value.toFloat();
+    var b = $(#param-blue).value.toFloat();
+    
+    var params = {};
+    params["red"] = r;
+    params["green"] = g;
+    params["blue"] = b;
+
+    // view是当前窗口，当前窗口的父窗口是主窗口，用view.parent表示
+    // C++中暴露的函数call_native是和主窗口绑定的，要通过主窗口调用
+    var parent = view.parent;
+    parent.call_native("grayscale", params);
+}
+
+function on_dom_load() {
+    $(#btnConfirm).subscribe("click", on_confirm);
+}

@@ -108,7 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;SKIP_MAIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(CPP_LIBS)\wxWidgets\include;$(CPP_LIBS)\wxWidgets\include\msvc;$(CPP_LIBS)\opencv\build\include;../3rdparty/sciter/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_LIBS)\wxWidgets\include;$(CPP_LIBS)\wxWidgets\include\msvc;$(CPP_LIBS)\opencv\build\include;../3rdparty/sciter/include;../3rdparty/jsoncpp/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -138,20 +138,40 @@ xcopy "$(CPP_LIBS)\opencv\build\x64\vc16\bin\opencv_world490d.dll" "$(SolutionDi
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_reader.cpp" />
+    <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_value.cpp" />
+    <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_writer.cpp" />
     <ClCompile Include="src\convertmattowxbmp.cpp" />
     <ClCompile Include="src\lsApp.cpp" />
     <ClCompile Include="src\lsMainFrame.cpp" />
+    <ClCompile Include="src\lsRegister.cpp" />
+    <ClCompile Include="src\test_command.cpp" />
     <ClCompile Include="src\wxOcvWindow.cpp" />
     <ClCompile Include="src\wxSciterControl.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\allocator.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\assertions.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\config.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\forwards.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\json.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\json_features.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\reader.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\value.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\version.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\include\json\writer.h" />
+    <ClInclude Include="..\3rdparty\jsoncpp\src\lib_json\json_tool.h" />
     <ClInclude Include="src\convertmattowxbmp.h" />
     <ClInclude Include="src\lsApp.h" />
     <ClInclude Include="src\lsMainFrame.h" />
+    <ClInclude Include="src\lsRegister.h" />
     <ClInclude Include="src\wxOcvWindow.h" />
     <ClInclude Include="src\wxSciterControl.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\3rdparty\jsoncpp\src\lib_json\json_valueiterator.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

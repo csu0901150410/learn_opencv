@@ -101,9 +101,13 @@ lsMainFrame::lsMainFrame(const wxString& title, const wxPoint& pos, const wxSize
 	wxMenu* menuView = new wxMenu;
 	menuView->Append(ID_WebCam, "&WebCam...", "Open WebCam.");
 
+	wxMenu* menuTest = new wxMenu;
+	menuTest->Append(ID_TestCallScript, "Test call script...");
+
 	wxMenuBar* menuBar = new wxMenuBar;
 	menuBar->Append(menuFile, "&File");
 	menuBar->Append(menuView, "&View");
+	menuBar->Append(menuTest, "&Test");
 
 	SetMenuBar(menuBar);
 
@@ -131,6 +135,8 @@ lsMainFrame::lsMainFrame(const wxString& title, const wxPoint& pos, const wxSize
 	Bind(wxEVT_PAINT, &lsMainFrame::OnPaint, this);
 
 	Bind(wxEVT_MENU, &lsMainFrame::OnWebCam, this, ID_WebCam);
+
+	Bind(wxEVT_MENU, &lsMainFrame::OnTestCallScript, this, ID_TestCallScript);
 
 	Bind(wxEVT_CAMERA_FRAME, &lsMainFrame::OnCameraFrame, this);
 	Bind(wxEVT_CAMERA_EMPTY, &lsMainFrame::OnCameraEmpty, this);
@@ -306,6 +312,13 @@ void lsMainFrame::OnCameraException(wxThreadEvent& event)
 {
 	wxLogError("Exception in the camera thread: %s", event.GetString());
 	Clear();
+}
+
+// 只能extern吗？
+extern void call_script(const std::string& name);
+void lsMainFrame::OnTestCallScript(wxCommandEvent& event)
+{
+	call_script("script_set_text");
 }
 
 wxBitmap lsMainFrame::ConvertMatToBitmap(const cv::Mat& matBitmap, long& timeConvert)
