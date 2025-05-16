@@ -9,6 +9,14 @@
 
 class wxOcvWindow;
 
+/**
+ * native/script交互的方式
+ * 
+ * 1.script_call_native。UI和后台交互，UI调用后台函数，并接收调用的返回值，比如UI从后台获取数据
+ * 2.native_call_script。后台调用脚本，并接收调用的返回值，比如后台处理过程中需要弹窗交互并获取UI输入的数据
+ * 
+ */
+
 class wxSciterControl :
 	public wxControl,
 	public sciter::host<wxSciterControl>,
@@ -48,7 +56,7 @@ protected:
 	virtual bool handle_scripting_call(HELEMENT he, SCRIPTING_METHOD_PARAMS& params) override;
 
 private:
-	bool script_call_native(std::string& name, const Json::Value& params);
+	Json::Value script_call_native(std::string& name, const Json::Value& params);
 
 protected:
 	HWINDOW m_hwnd;

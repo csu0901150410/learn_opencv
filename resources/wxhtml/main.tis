@@ -7,8 +7,7 @@ function self.ready() {
 function on_dom_load() {
     $(#context-menu-gray).subscribe("click", on_gray_click);
 
-    // 窗口加载时就打开新窗口
-    // open_window();
+    $(#template-window).subscribe("click", on_template_window_click);
 }
 
 var sub_toolwindow = null;
@@ -31,23 +30,48 @@ function on_gray_click() {
     open_window();
 }
 
-// $(#main-input).subscribe("keydown", function(evt) {
-//     stdout.println("main-input");
-//     stdout.println(evt.keyCode);
-// });
 
-
-// 点击按钮，脚本调用c++函数
-$(#btnTest).subscribe("click", function(evt) {
+// 测试脚本调用C++
+@click @on "#btnCallNative" :
+{
     var params = {};
-    params["text"] = "script call native done...";
-    view.call_native("script_call_demo", params);
-});
+    params["text"] = "script call native success ...";
+    var ret = view.call_native("script_call_demo", params);
 
-function script_set_text() {
-    $(#textTest).value = "native call script done...";
+    stdout << String.printf("type of ret: %V\n", typeof ret);
+    stdout << String.printf("ret: %V\n", ret);
+
+    $(#textNative).text = ret["ret_text"];
 }
 
-function native_set_text(text) {
-    $(#textTest).value = text;
+function script_function_for_native_call(params) {
+    $(#textScript).text = params["text"];
+}
+
+// 测试C++调用脚本，先脚本掉C++，再在C++中调用脚本函数 script_function_for_native_call
+@click @on "#btnCallScript" :
+{
+    var params = {};
+    var ret = view.call_native("call_script_demo", params);
+}
+
+@click @on "#btnPost" :
+{
+    view.post_request();
+}
+
+var template_window = null;
+
+function open_template_window() {
+    template_window = view.window{
+        type: View.TOOL_WINDOW,
+        url: self.url("toolwindows/template/template.htm"),
+        width: 300,
+        height: 400,
+        alignment: 5
+    };
+}
+
+function on_template_window_click() {
+    open_template_window();
 }

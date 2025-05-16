@@ -1,0 +1,17 @@
+
+// dom加载完毕时
+function self.ready() {
+    // we do post here as window is still in construction phase. Just to avoid needless draws
+    this.post(::view.state = View.WINDOW_SHOWN);
+
+    on_dom_load();
+}
+
+// 窗口关闭时
+function self.closing(reason) {
+    stdout << String.printf("Closing, reason: %s\n", reason);
+}
+
+function on_dom_load() {
+    
+}

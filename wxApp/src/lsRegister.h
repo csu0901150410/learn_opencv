@@ -5,7 +5,7 @@
 
 #include "json/json.h"
 
-typedef bool (*_command_func_ptr)(const Json::Value&);// 被注册的函数指针类型
+typedef Json::Value (*_command_func_ptr)(const Json::Value&);// 被注册的函数指针类型
 
 // 注册器
 // 实现思路 : 用一个单例类的全局唯一对象来保存注册的函数名字符串到函数指针的映射关系
@@ -14,7 +14,7 @@ class lsRegister
 public:
 	static lsRegister* instance();
 
-	bool register_function(const std::string& name, _command_func_ptr func);
+	Json::Value register_function(const std::string& name, _command_func_ptr func);
 
 	_command_func_ptr get_function(const std::string& name);
 

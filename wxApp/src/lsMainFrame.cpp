@@ -314,11 +314,22 @@ void lsMainFrame::OnCameraException(wxThreadEvent& event)
 	Clear();
 }
 
-// 只能extern吗？
-extern void call_script(const std::string& name);
+extern SCITER_VALUE call_script(const std::string& name, const Json::Value& params);
+
+// C++调用脚本函数
+Json::Value call_script_demo(const Json::Value& params = Json::Value::null)
+{
+	Json::Value jsparams;
+	jsparams["text"] = "native call script success ...";
+	call_script("script_function_for_native_call", jsparams);
+
+	return Json::Value();
+}
+REGISTER_FUNCTION("call_script_demo", call_script_demo);
+
 void lsMainFrame::OnTestCallScript(wxCommandEvent& event)
 {
-	call_script("script_set_text");
+	call_script_demo();
 }
 
 wxBitmap lsMainFrame::ConvertMatToBitmap(const cv::Mat& matBitmap, long& timeConvert)

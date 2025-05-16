@@ -19,7 +19,4 @@ private:
 	lsMainFrame* m_mainframe;
 };
 
-void call_script(const std::string& name);
-void call_script(const std::string& name, const Json::Value& params);
-
 IMPLEMENT_APP(lsApp);

@@ -6,6 +6,8 @@
         @import url(main.css);
     </style>
     <script type="text/tiscript">
+        include "decorators.tis";
+
         include "main.tis";
     </script>
 </head>
@@ -19,9 +21,21 @@
         </div-->
     </div>
 
-    <div style="flow:horizontal;background:gray;">
-        <button #btnTest>Test call native...</button>
-        <input #textTest |text style="width:*;">
+    <div style="flow:vertical;">
+        <div style="flow:horizontal;background:gray;">
+            <button #btnCallNative>call native</button>
+            <input #textNative |text style="width:*;" value="点击左侧按钮调用C++">
+        </div>
+
+        <div style="flow:horizontal;background:gray;">
+            <button #btnCallScript>call script</button>
+            <input #textScript |text style="width:*;" value="点击左侧按钮调用脚本">
+        </div>
+
+        <div style="flow:horizontal;background:gray;">
+            <button #btnPost>post</button>
+            <input #textPost |text style="width:*;">
+        </div>
     </div>
 
     <popup>
@@ -29,6 +43,7 @@
             <li id="context-menu-gray">灰度图</li>
             <li id="i2">二值化</li>
             <li id="i3">直方图</li>
+            <li id="template-window">模板窗口</li>
 
             <!-- 子菜单 -->
             <li>

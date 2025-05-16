@@ -1,5 +1,5 @@
 html {
-    border-radius: 4px;
+    border-radius: 4dip;
     background: transparent;
 }
 
@@ -8,45 +8,9 @@ body {
     color: #F0F0F0;
     padding: 0;
     margin: 0;
-    border-radius: 4px;
+    border-radius: 4dip;
 }
 
-.div-label-input {
-    flow: horizontal;
-    border-spacing: 12px;
-    padding: 4px;
-}
-
-.div-label-input > label {
-    vertical-align: middle;
-}
-
-.div-label-input > input {
-    width: *;
-}
-
-input {
-    background: #636363;
-    border-radius: 2px;
-    color: #F0F0F0;
-    text-selection-caret-color: window-accent-text-color;
-}
-
-.div-bottom-buttons {
-    flow: horizontal;
-    border-spacing: 12px;
-    padding: 4px;
-}
-
-.div-bottom-buttons > button {
-    width: *;
-}
-
-button {
-    border-radius: 6px;
-}
-
-// 窗口标题栏样式
 header {
     flow: horizontal;
     padding: 0 0 0 4dip;

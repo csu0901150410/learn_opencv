@@ -8,7 +8,7 @@ lsRegister* lsRegister::instance()
 	return uniqueInstance;
 }
 
-bool lsRegister::register_function(const std::string& name, _command_func_ptr func)
+Json::Value lsRegister::register_function(const std::string& name, _command_func_ptr func)
 {
 	if (_registered_func.end() != _registered_func.find(name))
 		return false;

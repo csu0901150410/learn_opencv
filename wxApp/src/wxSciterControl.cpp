@@ -8,6 +8,8 @@
 #include "wxOcvWindow.h"
 #include "lsRegister.h"
 
+wxSciterControl *gSciterControlPtr = nullptr;
+
 IMPLEMENT_DYNAMIC_CLASS(wxSciterControl, wxControl);
 
 wxSciterControl::wxSciterControl(wxWindow* parent, wxWindowID id)
@@ -15,6 +17,8 @@ wxSciterControl::wxSciterControl(wxWindow* parent, wxWindowID id)
 {
 	Init();
 	Create(parent, id);
+
+	gSciterControlPtr = this;
 }
 
 wxSciterControl::wxSciterControl()
@@ -25,6 +29,7 @@ wxSciterControl::wxSciterControl()
 
 wxSciterControl::~wxSciterControl()
 {
+	gSciterControlPtr = nullptr;
 #ifdef __WINDOWS__
 	::DestroyWindow(m_hwnd);
 #endif
@@ -124,6 +129,8 @@ sciter::string to_sciter_string(const std::string& str)
 	return auxstr.c_str();
 }
 
+extern std::wstring string_to_wstring(const std::string& str);
+
 bool wxSciterControl::handle_scripting_call(HELEMENT he, SCRIPTING_METHOD_PARAMS& params)
 {
 	aux::chars _name = aux::chars_of(params.name);
@@ -142,15 +149,26 @@ bool wxSciterControl::handle_scripting_call(HELEMENT he, SCRIPTING_METHOD_PARAMS
 			return false;
 		}
 
-		return script_call_native(strName, jsParams);
+		// Json 转 sciter::json 然后填写返回值
+		Json::Value retjs = script_call_native(strName, jsParams);
+		std::string retstr = retjs.toStyledString();
+		sciter::value jsonval = sciter::value::from_string(string_to_wstring(retstr), CVT_JSON_LITERAL);
+		params.result = jsonval;
+
+		return true;
+	}
+	else
+	{
+		// 形如 view.any_function_name 的调用，会进入这里，也可以根据名字去索引函数指针
+		int a = 100;
 	}
 
 	return true;
 }
 
-bool wxSciterControl::script_call_native(std::string& name, const Json::Value& params)
+Json::Value wxSciterControl::script_call_native(std::string& name, const Json::Value& params)
 {
-	bool ret = GET_REGISTERER_FUNCTION(name)(params);
+	Json::Value ret = GET_REGISTERER_FUNCTION(name)(params);
 	return ret;
 }
 
@@ -183,4 +201,37 @@ sciter::dom::element wxSciterControl::get_root() const
 		m_root = base->get_root();
 	}
 	return m_root;
+}
+
+// C++调用脚本函数的api
+
+// 无参数版本
+SCITER_VALUE call_script(const std::string& name)
+{
+	if (!gSciterControlPtr)
+		return SCITER_VALUE();
+
+	sciter::dom::element root = gSciterControlPtr->get_root();
+	if (root)
+	{
+		return root.call_function(name.c_str());
+	}
+	return SCITER_VALUE();
+}
+
+// 一个参数版本
+SCITER_VALUE call_script(const std::string& name, const Json::Value& params)
+{
+	if (!gSciterControlPtr)
+		return SCITER_VALUE();
+
+	sciter::dom::element root = gSciterControlPtr->get_root();
+	if (root)
+	{
+		std::string jsonstr = params.toStyledString();
+		SCITER_VALUE jsonval = SCITER_VALUE::from_string(string_to_wstring(jsonstr), CVT_JSON_LITERAL);
+
+		return root.call_function(name.c_str(), jsonval);
+	}
+	return SCITER_VALUE();
 }
