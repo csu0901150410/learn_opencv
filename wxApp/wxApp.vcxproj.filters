@@ -42,6 +42,12 @@
     <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_writer.cpp">
       <Filter>3rdparty\jsoncpp</Filter>
     </ClCompile>
+    <ClCompile Include="src\camerathread.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\frameprocessor.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\wxSciterControl.h">
@@ -100,6 +106,12 @@
     </ClInclude>
     <ClInclude Include="..\3rdparty\jsoncpp\src\lib_json\json_tool.h">
       <Filter>3rdparty\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="src\camerathread.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frameprocessor.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -141,7 +141,9 @@ xcopy "$(CPP_LIBS)\opencv\build\x64\vc16\bin\opencv_world490d.dll" "$(SolutionDi
     <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_reader.cpp" />
     <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_value.cpp" />
     <ClCompile Include="..\3rdparty\jsoncpp\src\lib_json\json_writer.cpp" />
+    <ClCompile Include="src\camerathread.cpp" />
     <ClCompile Include="src\convertmattowxbmp.cpp" />
+    <ClCompile Include="src\frameprocessor.cpp" />
     <ClCompile Include="src\lsApp.cpp" />
     <ClCompile Include="src\lsMainFrame.cpp" />
     <ClCompile Include="src\lsRegister.cpp" />
@@ -161,7 +163,9 @@ xcopy "$(CPP_LIBS)\opencv\build\x64\vc16\bin\opencv_world490d.dll" "$(SolutionDi
     <ClInclude Include="..\3rdparty\jsoncpp\include\json\version.h" />
     <ClInclude Include="..\3rdparty\jsoncpp\include\json\writer.h" />
     <ClInclude Include="..\3rdparty\jsoncpp\src\lib_json\json_tool.h" />
+    <ClInclude Include="src\camerathread.h" />
     <ClInclude Include="src\convertmattowxbmp.h" />
+    <ClInclude Include="src\frameprocessor.h" />
     <ClInclude Include="src\lsApp.h" />
     <ClInclude Include="src\lsMainFrame.h" />
     <ClInclude Include="src\lsRegister.h" />

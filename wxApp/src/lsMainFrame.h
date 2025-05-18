@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "wxSciterControl.h"
+#include "camerathread.h"
 
 namespace cv
 {
@@ -21,30 +22,22 @@ public:
 	lsMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
 	~lsMainFrame();
 
-	// If address is empty, the default webcam is used.
-	// resolution and useMJPEG are used only for webcam.
-	bool StartCameraCapture(const wxString& address,
-		const wxSize& resolution = wxSize(),
-		bool useMJPEG = false);
-	bool StartCameraThread();
-	void DeleteCameraThread();
-
-	void Clear();
+	void AddCamera(const wxString& address);
 
 	void OnQuit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
 	void OnOpen(wxCommandEvent& event);
 	void OnPaint(wxPaintEvent& event);
 
-	void OnWebCam(wxCommandEvent& event);
+	void OnCameraCaptureStarted(CameraEvent& event);
+	void OnCameraCommandResult(CameraEvent& event);
+	void OnCameraErrorOpen(CameraEvent& event);
+	void OnCameraErrorEmpty(CameraEvent& event);
+	void OnCameraErrorException(CameraEvent& event);
 
-	void OnCameraFrame(wxThreadEvent& event);
-	void OnCameraEmpty(wxThreadEvent& event);
-	void OnCameraException(wxThreadEvent& event);
+	void OnProcessNewCameraFrameData(wxTimerEvent& event);
 
 	void OnTestCallScript(wxCommandEvent& event);
-
-	static wxBitmap ConvertMatToBitmap(const cv::Mat& matBitmap, long& timeConvert);
 
 	enum
 	{
@@ -58,6 +51,28 @@ public:
 	};
 
 private:
-	cv::VideoCapture* m_videoCapture{nullptr};
-	CameraThread* m_cameraThread{nullptr};
+
+	struct CameraView
+	{
+		CameraThread* thread{nullptr};
+		CameraCommandDatas* commandDatas{nullptr};
+	};
+
+	// 主窗口定时刷新相机画面
+	static const long ms_defaultProcessNewCameraFrameDataInterval = 30;
+	long m_processNewCameraFrameDataInteval{ms_defaultProcessNewCameraFrameDataInterval};
+	wxTimer m_processNewCameraFrameDataTimer;
+
+	std::map<wxString, CameraView> m_cameras;
+	CameraFrameDataPtrs m_newCameraFrameData;
+	wxCriticalSection m_newCameraFrameDataCS;
+
+	long m_defaultCameraBackend{0};
+	long m_defaultCameraThreadSleepDuration{CameraSetupData::SleepFromFPS};
+	wxSize m_defaultCameraResolution;
+	int m_defaultCameraFPS{0};
+	bool m_defaultUseMJPGFourCC{false};
+
+	void RemoveCamera(const wxString& cameraName);
+	void RemoveAllCameras();
 };
