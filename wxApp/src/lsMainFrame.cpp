@@ -2,6 +2,8 @@
 
 #include <wx/choicdlg.h>
 
+#include <opencv2/ml.hpp>
+
 #include "convertmattowxbmp.h"
 #include "camerathread.h"
 #include "frameprocessor.h"
@@ -21,6 +23,7 @@ lsMainFrame::lsMainFrame(const wxString& title, const wxPoint& pos, const wxSize
 
 	wxMenu* menuTest = new wxMenu;
 	menuTest->Append(ID_TestCallScript, "Test call script...");
+	menuTest->Append(ID_TrainModel, "Train model ...");
 
 	wxMenuBar* menuBar = new wxMenuBar;
 	menuBar->Append(menuFile, "&File");
@@ -55,7 +58,7 @@ lsMainFrame::lsMainFrame(const wxString& title, const wxPoint& pos, const wxSize
 	Bind(wxEVT_MENU, [this](wxCommandEvent&) { AddCamera("0"); }, ID_WebCam);
 
 	Bind(wxEVT_MENU, &lsMainFrame::OnTestCallScript, this, ID_TestCallScript);
-
+	Bind(wxEVT_MENU, &lsMainFrame::OnTrainModel, this, ID_TrainModel);
 
 
 	m_processNewCameraFrameDataTimer.Start(m_processNewCameraFrameDataInteval);
@@ -203,7 +206,7 @@ void lsMainFrame::OnProcessNewCameraFrameData(wxTimerEvent& event)
 		}
 	}
 
-	wxLogTrace(TRACE_WXOPENCVCAMERAS, "Processed %zu new camera frames in %ld ms.", frameData.size(), stopWatch.Time());
+	//wxLogTrace(TRACE_WXOPENCVCAMERAS, "Processed %zu new camera frames in %ld ms.", frameData.size(), stopWatch.Time());
 	frameData.clear();
 }
 
@@ -223,6 +226,84 @@ REGISTER_FUNCTION("call_script_demo", call_script_demo);
 void lsMainFrame::OnTestCallScript(wxCommandEvent& event)
 {
 	call_script_demo();
+}
+
+void lsMainFrame::OnTrainModel(wxCommandEvent& event)
+{
+	auto extractHuFeature = [](const cv::Mat& src) {
+		cv::Mat ycrcb, mask;
+		cv::cvtColor(src, ycrcb, cv::COLOR_BGR2YCrCb);
+		cv::inRange(ycrcb, cv::Scalar(0, 133, 77), cv::Scalar(255, 173, 127), mask);
+		cv::morphologyEx(mask, mask, cv::MORPH_OPEN, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
+		cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
+
+		std::vector<std::vector<cv::Point>> contours;
+		cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+		double maxArea = 0;
+		int maxIdx = -1;
+		for (size_t i = 0; i < contours.size(); ++i) {
+			double area = contourArea(contours[i]);
+			if (area > maxArea) {
+				maxArea = area;
+				maxIdx = static_cast<int>(i);
+			}
+		}
+
+		if (maxIdx == -1)
+			return cv::Mat();
+
+		cv::Moments m = cv::moments(contours[maxIdx]);
+		double hu[7];
+		cv::HuMoments(m, hu);
+		cv::Mat feature(1, 7, CV_32F);
+		for (int i = 0; i < 7; ++i) {
+			feature.at<float>(0, i) = -1.0f * static_cast<float>(copysign(log10(abs(hu[i]) + 1e-10), hu[i]));
+		}
+		return feature;
+	};
+
+	auto loadImages = [extractHuFeature](const std::string& folderPath, int label, std::vector<cv::Mat>& features, std::vector<int>& labels) {
+		std::vector<cv::String> filenames;
+		cv::glob(folderPath, filenames, false);
+
+		for (size_t i = 0; i < filenames.size(); ++i) {
+			cv::Mat img = cv::imread(filenames[i]);
+			if (img.empty())
+				continue;
+
+			cv::Mat feat = extractHuFeature(img);
+			if (!feat.empty()) {
+				features.push_back(feat);
+				labels.push_back(label);
+			}
+		}
+	};
+
+	std::vector<cv::Mat> features;
+    std::vector<int> labels;
+
+    // 按实际路径修改这两个文件夹路径
+    std::string palmPath = "../resources/dataset/palms/*.bmp";
+    std::string fistPath = "../resources/dataset/fists/*.bmp";
+
+    loadImages(palmPath, 0, features, labels);
+    loadImages(fistPath, 1, features, labels);
+
+    if (features.empty()) {
+        return;
+    }
+
+    cv::Mat trainData;
+    cv::vconcat(features, trainData);
+    cv::Mat responses = cv::Mat(labels).reshape(1, labels.size());
+
+    cv::Ptr<cv::ml::KNearest> knn = cv::ml::KNearest::create();
+    knn->setDefaultK(3);
+	knn->setIsClassifier(true);
+
+	knn->train(trainData, cv::ml::ROW_SAMPLE, responses);
+    knn->save("../resources/model/gesture_model.xml");
 }
 
 void lsMainFrame::RemoveCamera(const wxString& cameraName)

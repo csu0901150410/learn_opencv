@@ -39,6 +39,8 @@ public:
 
 	void OnTestCallScript(wxCommandEvent& event);
 
+	void OnTrainModel(wxCommandEvent& event);
+
 	enum
 	{
 		ID_Quit = 1,
@@ -48,6 +50,8 @@ public:
 		ID_WebCam,
 
 		ID_TestCallScript,
+
+		ID_TrainModel,
 	};
 
 private:

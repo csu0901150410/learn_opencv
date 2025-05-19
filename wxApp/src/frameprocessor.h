@@ -2,8 +2,6 @@
 
 #include <opencv2/opencv.hpp>
 
-void init_cascade_classifier();
-
 // 帧处理接口
 class FrameProcessor
 {
@@ -23,6 +21,20 @@ class RecognizeProcessor : public FrameProcessor
 {
 public:
 	virtual void process(cv::Mat& input, cv::Mat& output) override;
+
+	RecognizeProcessor(const std::string& modelPath);
+
+private:
+	cv::Mat compensate_lighting(const cv::Mat& input);
+	cv::Mat extract_skin(const cv::Mat& input);
+	bool extract_hand_contour(const cv::Mat& mask, std::vector<cv::Point>& contour);
+	bool extract_hu_moments(const std::vector<cv::Point>& contour, cv::Mat& feature);
+	bool classify(const cv::Mat& feature, int& result);
+
+	cv::Mat extract_hu_feature(const cv::Mat& input);
+
+private:
+	cv::Ptr<cv::ml::KNearest> knn;
 };
 
 extern GrayscaleProcessor g_grayscaleProcessor;
