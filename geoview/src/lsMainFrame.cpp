@@ -54,7 +54,11 @@ wxMenuBar* lsMainFrame::CreateMenuBar()
 	fileMenu->AppendSeparator();
 	fileMenu->Append(wxID_EXIT, _("Exit"));
 
-	menuBar->Append(fileMenu, _("File"));
+	wxMenu *editMenu = new wxMenu;
+	editMenu->Append(ID_MENU_RANDOM_LINES, wxT("Generate Random Lines ..."));
+
+	menuBar->Append(fileMenu, wxT("File"));
+	menuBar->Append(editMenu, wxT("Edit"));
 
 	return menuBar;
 }

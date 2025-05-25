@@ -12,6 +12,9 @@ lsView::lsView()
 {
 	wxLogTrace(TRACE_GEOVIEW, wxT("lsView::lsView"));
 	SetFrame(wxGetApp().GetTopWindow());
+
+	// 绑定事件处理函数
+	Bind(wxEVT_MENU, &lsView::OnGenerateRandomLines, this, ID_MENU_RANDOM_LINES);
 }
 
 bool lsView::OnCreate(wxDocument* doc, long flags)
@@ -37,6 +40,12 @@ void lsView::OnDraw(wxDC* dc)
 void lsView::OnUpdate(wxView* sender, wxObject* hint /*= (wxObject *)nullptr*/)
 {
 	wxLogTrace(TRACE_GEOVIEW, wxT("lsView::OnUpdate"));
+
+	auto* doc = wxDynamicCast(GetDocument(), lsDocument);
+	if (doc && m_canvas)
+	{
+		m_canvas->FitToWorld(doc->GetBoundbox());
+	}
 }
 
 bool lsView::OnClose(bool deleteWindow /*= true*/)
@@ -55,6 +64,15 @@ bool lsView::OnClose(bool deleteWindow /*= true*/)
 		wxStaticCast(GetFrame(), wxFrame)->SetTitle(wxGetApp().GetAppDisplayName());
 
 	return true;
+}
+
+void lsView::OnGenerateRandomLines(wxCommandEvent& event)
+{
+	auto doc = wxDynamicCast(GetDocument(), lsDocument);
+	if (doc)
+	{
+		doc->GenerateRandomLines();
+	}
 }
 
 lsDocument* lsView::GetDocument()

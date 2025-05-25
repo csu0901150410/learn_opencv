@@ -27,6 +27,8 @@ bool lsApp::OnInit()
 	icon.LoadFile("../resources/images/icons/app.ico", wxBITMAP_TYPE_ICO);
 	m_mainFrame->SetIcon(icon);
 
+	m_docManager->CreateNewDocument();
+
 	m_mainFrame->Center();
 	m_mainFrame->Show(true);
 

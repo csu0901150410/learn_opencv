@@ -5,6 +5,15 @@
 
 class lsCanvas;
 
+enum
+{
+	ID_CANVAS = wxID_HIGHEST + 1,
+	ID_MENU_RANDOM_LINES,
+};
+
+/**
+ * 主窗口。持有菜单栏、工具栏、状态栏。
+ */
 class lsMainFrame : public wxDocParentFrame
 {
 public:
@@ -21,10 +30,6 @@ public:
 	void OnExit(wxCommandEvent& event);
 
 public:
-	enum
-	{
-		ID_CANVAS = wxID_HIGHEST + 1,
-	};
 
 	lsCanvas* m_canvas;
 
