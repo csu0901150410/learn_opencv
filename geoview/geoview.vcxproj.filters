@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\lsApp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lsMainFrame.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+	<ClCompile Include="src\lsDocument.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+	<ClCompile Include="src\lsView.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{f508266d-1fc9-42dc-a2b5-25b9689f3640}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\lsApp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lsMainFrame.h">
+      <Filter>src</Filter>
+    </ClInclude>
+	<ClInclude Include="src\lsDocument.h">
+      <Filter>src</Filter>
+    </ClInclude>
+	<ClInclude Include="src\lsView.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

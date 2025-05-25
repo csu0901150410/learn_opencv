@@ -4,3 +4,5 @@ build/
 # Settings and configs
 .vs/
 .vscode/
+
+resources/dataset/
