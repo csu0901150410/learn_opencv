@@ -134,12 +134,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\lsApp.cpp" />
+    <ClCompile Include="src\lsCanvas.cpp" />
     <ClCompile Include="src\lsDocument.cpp" />
     <ClCompile Include="src\lsMainFrame.cpp" />
     <ClCompile Include="src\lsView.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lsApp.h" />
+    <ClInclude Include="src\lsCanvas.h" />
     <ClInclude Include="src\lsDocument.h" />
     <ClInclude Include="src\lsMainFrame.h" />
     <ClInclude Include="src\lsView.h" />

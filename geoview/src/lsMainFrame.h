@@ -2,7 +2,8 @@
 
 #include <wx/wx.h>
 #include <wx/docview.h>
-#include <wx/aui/aui.h>
+
+class lsCanvas;
 
 class lsMainFrame : public wxDocParentFrame
 {
@@ -22,17 +23,16 @@ public:
 public:
 	enum
 	{
-		ID_EDITOR = wxID_HIGHEST + 1,
+		ID_CANVAS = wxID_HIGHEST + 1,
 	};
 
-	wxTextCtrl* m_editor;
+	lsCanvas* m_canvas;
 
 private:
 	void CreateControls();
 	wxMenuBar *CreateMenuBar();
 
 private:
-	wxAuiManager m_auiManager;
 
-	DECLARE_DYNAMIC_CLASS(lsMainFrame)
+	wxDECLARE_DYNAMIC_CLASS(lsMainFrame);
 };

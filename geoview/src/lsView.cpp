@@ -1,14 +1,29 @@
 ﻿#include "lsView.h"
+#include "lsDocument.h"
 #include "lsMainFrame.h"
+#include "lsCanvas.h"
 
 #include "lsApp.h"
 
-IMPLEMENT_DYNAMIC_CLASS(lsView, wxView);
+wxIMPLEMENT_DYNAMIC_CLASS(lsView, wxView);
 
 lsView::lsView()
+	: m_canvas(nullptr)
 {
 	wxLogTrace(TRACE_GEOVIEW, wxT("lsView::lsView"));
-	SetFrame(wxTheApp->GetTopWindow());
+	SetFrame(wxGetApp().GetTopWindow());
+}
+
+bool lsView::OnCreate(wxDocument* doc, long flags)
+{
+	if (!wxView::OnCreate(doc, flags))
+		return false;
+
+	m_canvas = wxGetApp().GetMainWindowCanvas();
+	m_canvas->SetView(this);
+	m_canvas->Refresh();
+
+	return true;
 }
 
 void lsView::OnDraw(wxDC* dc)
@@ -27,26 +42,22 @@ void lsView::OnUpdate(wxView* sender, wxObject* hint /*= (wxObject *)nullptr*/)
 bool lsView::OnClose(bool deleteWindow /*= true*/)
 {
 	wxLogTrace(TRACE_GEOVIEW, wxT("lsView::OnClose"));
-	if (!GetDocument()->Close())
-	{
+	if (!wxView::OnClose(deleteWindow))
 		return false;
-	}
 
-	SetFrame(NULL);
 	Activate(false);
+
+	m_canvas->ClearBackground();
+	m_canvas->ResetView();
+	m_canvas = nullptr;
+
+	if (GetFrame())
+		wxStaticCast(GetFrame(), wxFrame)->SetTitle(wxGetApp().GetAppDisplayName());
+
 	return true;
 }
 
-wxTextCtrl* lsView::GetEditor()
+lsDocument* lsView::GetDocument()
 {
-	do
-	{
-		lsMainFrame *frame = wxDynamicCast(GetFrame(), lsMainFrame);
-		if (!frame)
-			break;
-		return frame->m_editor;
-	}
-	while (false);
-	return nullptr;
+	return wxStaticCast(wxView::GetDocument(), lsDocument);
 }
-

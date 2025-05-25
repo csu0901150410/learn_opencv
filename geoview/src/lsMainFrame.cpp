@@ -1,6 +1,8 @@
 ﻿#include "lsMainFrame.h"
 
-IMPLEMENT_DYNAMIC_CLASS(lsMainFrame, wxDocParentFrame)
+#include "lsCanvas.h"
+
+wxIMPLEMENT_DYNAMIC_CLASS(lsMainFrame, wxDocParentFrame)
 
 lsMainFrame::lsMainFrame()
 {
@@ -14,7 +16,7 @@ lsMainFrame::lsMainFrame(wxDocManager* manager, wxFrame* parent, wxWindowID id, 
 
 lsMainFrame::~lsMainFrame()
 {
-	m_auiManager.UnInit();
+	
 }
 
 bool lsMainFrame::Create(wxDocManager* manager, wxFrame* parent, wxWindowID id, const wxString& title, const wxPoint& pos /*= wxDefaultPosition*/, const wxSize& size /*= wxDefaultSize*/)
@@ -38,17 +40,7 @@ void lsMainFrame::CreateControls()
 {
 	SetMenuBar(CreateMenuBar());
 
-	m_auiManager.SetManagedWindow(this);
-
-
-	m_editor = new wxTextCtrl(this, ID_EDITOR, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-
-
-	//m_auiManager.AddPane(new wxPanel(this, wxID_ANY), wxAuiPaneInfo().CenterPane().Name(_("Canvas")));
-
-	m_auiManager.AddPane(m_editor, wxAuiPaneInfo().CenterPane().Name(_("Editor")));
-
-	m_auiManager.Update();
+	m_canvas = new lsCanvas(nullptr, this);
 }
 
 wxMenuBar* lsMainFrame::CreateMenuBar()

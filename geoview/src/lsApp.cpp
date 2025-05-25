@@ -3,10 +3,13 @@
 #include "lsDocument.h"
 #include "lsView.h"
 
-IMPLEMENT_APP(lsApp)
+wxIMPLEMENT_APP(lsApp);
 
 bool lsApp::OnInit()
 {
+	if (!wxApp::OnInit())
+		return false;
+
 	wxLog::AddTraceMask(TRACE_GEOVIEW);
 
 	m_docManager = new wxDocManager;
@@ -17,15 +20,15 @@ bool lsApp::OnInit()
 		wxEmptyString, wxT("TXT"), wxT("doc"), wxT("view"),
 		CLASSINFO(lsDocument), CLASSINFO(lsView));
 
-	lsMainFrame *frame = new lsMainFrame(m_docManager, nullptr, wxID_ANY, wxT("demo"));
-	SetTopWindow(frame);
+	m_mainFrame = new lsMainFrame(m_docManager, nullptr, wxID_ANY, wxT("demo"), wxDefaultPosition, wxSize(800, 600));
+	SetTopWindow(m_mainFrame);
 
 	wxIcon icon;
 	icon.LoadFile("../resources/images/icons/app.ico", wxBITMAP_TYPE_ICO);
-	frame->SetIcon(icon);
+	m_mainFrame->SetIcon(icon);
 
-	frame->Center();
-	frame->Show(true);
+	m_mainFrame->Center();
+	m_mainFrame->Show(true);
 
 	return true;
 }
@@ -34,5 +37,10 @@ int lsApp::OnExit()
 {
 	wxDELETE(m_docManager);
 	return wxApp::OnExit();
+}
+
+lsCanvas* lsApp::GetMainWindowCanvas() const
+{
+	return m_mainFrame->m_canvas;
 }
 

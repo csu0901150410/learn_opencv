@@ -8,11 +8,9 @@ class lsDocument : public wxDocument
 public:
 	lsDocument();
 
-	virtual bool OnSaveDocument(const wxString& filename);
-	virtual bool OnOpenDocument(const wxString& filename);
-	virtual bool IsModified() const;
-	virtual void Modify(bool mod);
+	std::ostream& SaveObject(std::ostream& stream);
+	std::istream& LoadObject(std::istream& stream);
 
 private:
-	DECLARE_DYNAMIC_CLASS(lsDocument);
+	wxDECLARE_DYNAMIC_CLASS(lsDocument);
 };
