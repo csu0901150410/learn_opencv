@@ -4,6 +4,7 @@
 #include <wx/docview.h>
 
 class lsCanvas;
+class lsRenderer;
 
 enum
 {
@@ -32,6 +33,8 @@ public:
 public:
 
 	lsCanvas* m_canvas;
+
+	std::unique_ptr<lsRenderer> m_renderer;
 
 private:
 	void CreateControls();

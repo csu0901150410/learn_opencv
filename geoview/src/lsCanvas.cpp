@@ -1,12 +1,14 @@
 ﻿#include <wx/dcbuffer.h>
+#include <wx/graphics.h>
 
 #include "lsCanvas.h"
 #include "lsDocument.h"
 
-lsCanvas::lsCanvas(wxView* view, wxWindow* parent /*= nullptr*/)
+lsCanvas::lsCanvas(wxView* view, wxWindow* parent /*= nullptr*/, lsRenderer* renderer /*= nullptr*/)
 	: wxScrolledWindow(parent ? parent : view->GetFrame())
 	, m_view(view)
 	, m_scale(1.0)
+	, m_renderer(renderer)
 {
 	SetCursor(wxCursor(wxCURSOR_HAND));
 	SetBackgroundStyle(wxBG_STYLE_PAINT);
@@ -17,7 +19,7 @@ lsCanvas::lsCanvas(wxView* view, wxWindow* parent /*= nullptr*/)
 
 lsCanvas::~lsCanvas()
 {
-
+	//delete m_renderer;
 }
 
 void lsCanvas::OnDraw(wxDC& dc)
@@ -46,11 +48,25 @@ void lsCanvas::OnPaint(wxPaintEvent& event)
 
 	if (!doc->GetSegments().empty())
 	{
-		dc.SetPen(*wxWHITE_PEN);
-		for (const auto& seg : doc->GetSegments())
-		{
-			DrawLine(dc, seg.s, seg.e);
-		}
+		// See https://zetcode.com/gfx/cairo/cairobackends/
+		cairo_surface_t* surface;
+		cairo_t* cr;
+
+		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 400, 400);
+		cr = cairo_create(surface);
+
+		cairo_set_source_rgb(cr, 0, 0, 0);
+		cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+		cairo_set_font_size(cr, 40.0);
+
+		cairo_move_to(cr, 10.0, 50.0);
+		cairo_show_text(cr, "Hello World");
+
+		// 写到exe文件夹
+		cairo_surface_write_to_png(surface, "../build/cairo.png");
+
+		cairo_destroy(cr);
+		cairo_surface_destroy(surface);
 	}
 
 	//OnDraw(dc);
@@ -78,6 +94,9 @@ void lsCanvas::OnSize(wxSizeEvent& event)
 	}
 
 	m_lastClientSize = newSize;
+
+	auto* cairoRenderer = dynamic_cast<lsCairoRenderer*>(m_renderer);
+	cairoRenderer->Resize(newSize.GetWidth(), newSize.GetHeight());
 
 	event.Skip();
 	Refresh();
@@ -115,6 +134,11 @@ void lsCanvas::FitToWorld(const wxRect2DDouble& worldBox)
 	Refresh();
 }
 
+void lsCanvas::SetRenderer(lsRenderer* renderer)
+{
+	m_renderer = renderer;
+}
+
 void lsCanvas::OnMouseEvent(wxMouseEvent& event)
 {
 	
@@ -136,4 +160,71 @@ wxPoint2DDouble lsCanvas::ScreenToWorld(const wxPoint& pt) const
 void lsCanvas::DrawLine(wxDC& dc, const wxPoint2DDouble& s, const wxPoint2DDouble& e)
 {
 	dc.DrawLine(WorldToScreen(s), WorldToScreen(e));
+}
+
+
+lsCairoRenderer::lsCairoRenderer(int width, int height)
+{
+	Resize(width, height);
+}
+
+lsCairoRenderer::~lsCairoRenderer()
+{
+	if (m_cr)
+		cairo_destroy(m_cr);
+	if (m_surface)
+		cairo_surface_destroy(m_surface);
+}
+
+void lsCairoRenderer::BeginDraw()
+{
+	// 初始化为黑色
+	cairo_save(m_cr);
+	cairo_set_source_rgba(m_cr, 0, 0, 0, 1);
+	cairo_paint(m_cr);
+}
+
+void lsCairoRenderer::EndDraw()
+{
+	cairo_restore(m_cr);
+}
+
+void lsCairoRenderer::SetLineWidth(double width)
+{
+	cairo_set_line_width(m_cr, width);
+}
+
+void lsCairoRenderer::SetColor(const wxColour& color)
+{
+	cairo_set_source_rgba(m_cr, 
+		color.Red() / 255.0,
+		color.Green() / 255.0,
+		color.Blue() / 255.0,
+		color.Alpha() / 255.0);
+}
+
+void lsCairoRenderer::DrawLine(double sx, double sy, double ex, double ey)
+{
+	cairo_move_to(m_cr, sx, sy);
+	cairo_line_to(m_cr, ex, ey);
+	cairo_stroke(m_cr);
+}
+
+void lsCairoRenderer::Resize(int width, int height)
+{
+	if (m_cr)
+		cairo_destroy(m_cr);
+	if (m_surface)
+		cairo_surface_destroy(m_surface);
+
+	// 重新创建绘图surface
+	m_width = width;
+	m_height = height;
+	m_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
+	m_cr = cairo_create(m_surface);
+}
+
+cairo_surface_t* lsCairoRenderer::GetSurface() const
+{
+	return m_surface;
 }
