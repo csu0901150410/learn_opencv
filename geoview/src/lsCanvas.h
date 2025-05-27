@@ -17,6 +17,7 @@ public:
 	virtual void SetColor(const wxColour& color) = 0;
 
 	virtual void DrawLine(double sx, double sy, double ex, double ey) = 0;
+	virtual void DrawLine(const wxPoint2DDouble& s, const wxPoint2DDouble& e);
 
 	virtual void Resize(int width, int height) = 0;
 };
@@ -24,7 +25,7 @@ public:
 class lsCairoRenderer : public lsRenderer
 {
 public:
-	lsCairoRenderer(int width, int height);
+	lsCairoRenderer(wxWindow* window, int width, int height);
 	~lsCairoRenderer();
 
 	void BeginDraw() override;
@@ -40,10 +41,29 @@ public:
 	cairo_surface_t* GetSurface() const;
 
 private:
+	void init_surface();
+	void deinit_surface();
+
+	void release_buffer();
+	void allocate_buffer();
+
+private:
+	wxWindow* m_window;
+
+	bool m_initialized = false;// 标记cairo对象是否创建，保证不重复创建和释放
 	cairo_surface_t* m_surface = nullptr;
 	cairo_t* m_cr = nullptr;
 	int m_width = 0;
 	int m_height = 0;
+	int m_stride = 0;
+	int m_crBufferSize = 0;
+	int m_wxBufferSize = 0;
+
+	double m_lineWidth = 1.0;
+	wxColour m_color = *wxRED;
+
+	unsigned char* m_crImageBuffer = nullptr;// cairo绘图缓冲区，四通道
+	unsigned char* m_wxImageBuffer = nullptr;// wxImage转换缓冲区，三通道
 };
 
 /**
@@ -63,7 +83,6 @@ public:
 	void SetRenderer(lsRenderer* renderer);
 
 private:
-	virtual void OnDraw(wxDC& dc);
 	virtual void OnPaint(wxPaintEvent& event);
 	virtual void OnSize(wxSizeEvent& event);
 	void OnMouseEvent(wxMouseEvent& event);

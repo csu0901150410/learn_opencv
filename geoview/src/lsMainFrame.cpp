@@ -24,8 +24,8 @@ bool lsMainFrame::Create(wxDocManager* manager, wxFrame* parent, wxWindowID id, 
 	bool res = wxDocParentFrame::Create(manager, parent, id, title, pos, size);
 	if (res)
 	{
-		m_renderer = std::make_unique<lsCairoRenderer>(size.GetWidth(), size.GetHeight());
 		m_canvas = new lsCanvas(nullptr, this);
+		m_renderer = std::make_unique<lsCairoRenderer>(m_canvas, size.GetWidth(), size.GetHeight());
 		m_canvas->SetRenderer(m_renderer.get());
 
 		CreateControls();

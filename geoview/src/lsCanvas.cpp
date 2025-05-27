@@ -19,26 +19,11 @@ lsCanvas::lsCanvas(wxView* view, wxWindow* parent /*= nullptr*/, lsRenderer* ren
 
 lsCanvas::~lsCanvas()
 {
-	//delete m_renderer;
-}
 
-void lsCanvas::OnDraw(wxDC& dc)
-{
-	if (m_view)
-		m_view->OnDraw(&dc);
-	else
-	{
-		dc.SetBackground(*wxGREY_BRUSH);
-		dc.Clear();
-	}
 }
 
 void lsCanvas::OnPaint(wxPaintEvent& event)
 {
-	wxAutoBufferedPaintDC dc(this);
-	dc.SetBackground(*wxBLACK_BRUSH);
-	dc.Clear();
-
 	if (!m_view)
 		return;
 
@@ -48,28 +33,21 @@ void lsCanvas::OnPaint(wxPaintEvent& event)
 
 	if (!doc->GetSegments().empty())
 	{
-		// See https://zetcode.com/gfx/cairo/cairobackends/
-		cairo_surface_t* surface;
-		cairo_t* cr;
+		m_renderer->BeginDraw();
 
-		surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 400, 400);
-		cr = cairo_create(surface);
+		for (const auto& seg : doc->GetSegments())
+		{
+			m_renderer->DrawLine(WorldToScreen(seg.s), WorldToScreen(seg.e));
+		}
 
-		cairo_set_source_rgb(cr, 0, 0, 0);
-		cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-		cairo_set_font_size(cr, 40.0);
-
-		cairo_move_to(cr, 10.0, 50.0);
-		cairo_show_text(cr, "Hello World");
-
-		// 写到exe文件夹
-		cairo_surface_write_to_png(surface, "../build/cairo.png");
-
-		cairo_destroy(cr);
-		cairo_surface_destroy(surface);
+		m_renderer->EndDraw();
 	}
-
-	//OnDraw(dc);
+	else
+	{
+		wxAutoBufferedPaintDC dc(this);
+		dc.SetBackground(*wxBLACK_BRUSH);
+		dc.Clear();
+	}
 }
 
 void lsCanvas::OnSize(wxSizeEvent& event)
@@ -162,45 +140,89 @@ void lsCanvas::DrawLine(wxDC& dc, const wxPoint2DDouble& s, const wxPoint2DDoubl
 	dc.DrawLine(WorldToScreen(s), WorldToScreen(e));
 }
 
-
-lsCairoRenderer::lsCairoRenderer(int width, int height)
+lsCairoRenderer::lsCairoRenderer(wxWindow* window, int width, int height)
+	: m_window(window)
 {
 	Resize(width, height);
 }
 
 lsCairoRenderer::~lsCairoRenderer()
 {
-	if (m_cr)
-		cairo_destroy(m_cr);
-	if (m_surface)
-		cairo_surface_destroy(m_surface);
+	release_buffer();
 }
 
 void lsCairoRenderer::BeginDraw()
 {
-	// 初始化为黑色
-	cairo_save(m_cr);
-	cairo_set_source_rgba(m_cr, 0, 0, 0, 1);
-	cairo_paint(m_cr);
+	init_surface();
+
+	// 清屏
+	cairo_set_source_rgb(m_cr, 0, 0, 0);
+	cairo_rectangle(m_cr, 0, 0, m_width, m_height);
+	cairo_fill(m_cr);
+
+	// 设置线宽线色
+	cairo_set_line_width(m_cr, m_lineWidth);
+	cairo_set_source_rgba(m_cr, 
+		m_color.Red() / 255.0,
+		m_color.Green() / 255.0,
+		m_color.Blue() / 255.0,
+		m_color.Alpha() / 255.0);
 }
 
 void lsCairoRenderer::EndDraw()
 {
-	cairo_restore(m_cr);
+	// 绘制结束，将cairo绘制的数据组织成wxImage的格式
+	int stride = m_stride;
+	int width = m_width;
+	int height = m_height;
+	unsigned char* src = m_crImageBuffer;
+	unsigned char* dst = m_wxImageBuffer;
+
+	// 逐行转换
+	for (int row = 0; row < height; ++row)
+	{
+		// 行内按四通道排列，逐通道转换
+		for (int col = 0; col < stride; col += 4)
+		{
+			const unsigned char* chanel = src + col;
+
+			// src BGRA --> dst RGB
+			dst[0] = chanel[2];
+			dst[1] = chanel[1];
+			dst[2] = chanel[0];
+
+			// next dst chanel
+			dst += 3;
+		}
+
+		// next src row
+		src += stride;
+	}
+
+	// 渲染到具体的设备上
+	wxImage image(width, height, m_wxImageBuffer, true);
+	wxBitmap bitmap(image);
+	wxMemoryDC mdc(bitmap);
+	wxClientDC cdc(m_window);
+	cdc.Blit(0, 0, width, height, &mdc, 0, 0, wxCOPY);
+
+	// 写到exe文件夹
+	if (0)
+	{
+		cairo_surface_write_to_png(m_surface, "../build/cairo.png");
+	}
+
+	deinit_surface();
 }
 
 void lsCairoRenderer::SetLineWidth(double width)
 {
-	cairo_set_line_width(m_cr, width);
+	m_lineWidth = width;
 }
 
 void lsCairoRenderer::SetColor(const wxColour& color)
 {
-	cairo_set_source_rgba(m_cr, 
-		color.Red() / 255.0,
-		color.Green() / 255.0,
-		color.Blue() / 255.0,
-		color.Alpha() / 255.0);
+	m_color = color;
 }
 
 void lsCairoRenderer::DrawLine(double sx, double sy, double ex, double ey)
@@ -210,21 +232,71 @@ void lsCairoRenderer::DrawLine(double sx, double sy, double ex, double ey)
 	cairo_stroke(m_cr);
 }
 
+void lsRenderer::DrawLine(const wxPoint2DDouble& s, const wxPoint2DDouble& e)
+{
+	DrawLine(s.m_x, s.m_y, e.m_x, e.m_y);
+}
+
 void lsCairoRenderer::Resize(int width, int height)
 {
-	if (m_cr)
-		cairo_destroy(m_cr);
-	if (m_surface)
-		cairo_surface_destroy(m_surface);
-
-	// 重新创建绘图surface
 	m_width = width;
 	m_height = height;
-	m_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
-	m_cr = cairo_create(m_surface);
+
+	// 绘图尺寸变了，释放原有绘图缓冲区并重新申请
+	release_buffer();
+	allocate_buffer();
 }
 
 cairo_surface_t* lsCairoRenderer::GetSurface() const
 {
 	return m_surface;
+}
+
+void lsCairoRenderer::init_surface()
+{
+	if (m_initialized)
+		return;
+
+	m_surface = cairo_image_surface_create_for_data(m_crImageBuffer,
+		CAIRO_FORMAT_ARGB32, m_width, m_height, m_stride);
+	m_cr = cairo_create(m_surface);
+
+	m_initialized = true;
+}
+
+void lsCairoRenderer::deinit_surface()
+{
+	if (!m_initialized)
+		return;
+
+	cairo_destroy(m_cr);
+	m_cr = nullptr;
+	cairo_surface_destroy(m_surface);
+	m_surface = nullptr;
+
+	m_initialized = false;
+}
+
+void lsCairoRenderer::release_buffer()
+{
+	delete[] m_crImageBuffer;
+	m_crImageBuffer = nullptr;
+	delete[] m_wxImageBuffer;
+	m_wxImageBuffer = nullptr;
+}
+
+void lsCairoRenderer::allocate_buffer()
+{
+	m_stride = cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, m_width);
+
+	// cairo实际每行要对齐到某个宽度，可能和width不一致，stride已经考虑了通道数
+	m_crBufferSize = m_stride * m_height;
+
+	// wxImage缓冲区大小
+	m_wxBufferSize = m_width * m_height * 3;
+
+	assert(nullptr == m_crImageBuffer);
+	m_crImageBuffer = new unsigned char[m_crBufferSize];
+	assert(nullptr == m_wxImageBuffer);
+	m_wxImageBuffer = new unsigned char[m_wxBufferSize];
 }
