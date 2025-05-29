@@ -7,14 +7,20 @@
 lsCanvas::lsCanvas(wxView* view, wxWindow* parent /*= nullptr*/, lsRenderer* renderer /*= nullptr*/)
 	: wxScrolledWindow(parent ? parent : view->GetFrame())
 	, m_view(view)
-	, m_scale(1.0)
 	, m_renderer(renderer)
 {
 	SetCursor(wxCursor(wxCURSOR_HAND));
 	SetBackgroundStyle(wxBG_STYLE_PAINT);
 
 	Bind(wxEVT_PAINT, &lsCanvas::OnPaint, this);
+	Bind(wxEVT_MOUSEWHEEL, &lsCanvas::OnMouse, this);
+	Bind(wxEVT_RIGHT_DOWN, &lsCanvas::OnMouse, this);
+	Bind(wxEVT_RIGHT_UP, &lsCanvas::OnMouse, this);
+	Bind(wxEVT_MIDDLE_DOWN, &lsCanvas::OnMouse, this);
+	Bind(wxEVT_MIDDLE_UP, &lsCanvas::OnMouse, this);
+	Bind(wxEVT_MOTION, &lsCanvas::OnMouse, this);
 	Bind(wxEVT_SIZE, &lsCanvas::OnSize, this);
+	Bind(wxEVT_MOUSE_CAPTURE_LOST, &lsCanvas::OnCaptureLost, this);
 }
 
 lsCanvas::~lsCanvas()
@@ -35,9 +41,10 @@ void lsCanvas::OnPaint(wxPaintEvent& event)
 	{
 		m_renderer->BeginDraw();
 
+		// renderer可以作为一个绘制工具传参到其他类的方法，比如doc，doc中取数据控制绘制
 		for (const auto& seg : doc->GetSegments())
 		{
-			m_renderer->DrawLine(WorldToScreen(seg.s), WorldToScreen(seg.e));
+			m_renderer->DrawLine(m_viewControl.WorldToScreen(seg.s), m_viewControl.WorldToScreen(seg.e));
 		}
 
 		m_renderer->EndDraw();
@@ -50,34 +57,53 @@ void lsCanvas::OnPaint(wxPaintEvent& event)
 	}
 }
 
+void lsCanvas::OnMouse(wxMouseEvent& event)
+{
+	if (event.GetWheelRotation() != 0)
+	{
+		// 滚轮缩放
+		double zoomFactor = (event.GetWheelRotation() > 0) ? 1.1 : 1.0 / 1.1;
+		m_viewControl.Zoom(zoomFactor, event.GetPosition());
+		Refresh();
+	}
+	else if (event.RightDown() || event.MiddleDown())
+	{
+		// 右键/中键拖拽
+		m_dragging = true;
+		m_lastMousePos = event.GetPosition();
+		CaptureMouse();
+	}
+	else if (m_dragging && (event.RightUp() || event.MiddleUp()))
+	{
+		// 拖拽释放
+		m_dragging = false;
+		if (HasCapture())
+			ReleaseCapture();
+	}
+	else if (m_dragging && event.Dragging())
+	{
+		// 拖拽过程
+		wxPoint pos = event.GetPosition();
+		wxPoint delta = pos - m_lastMousePos;
+		m_viewControl.Pan(delta.x, delta.y);
+		m_lastMousePos = pos;
+		Refresh();
+	}
+}
+
 void lsCanvas::OnSize(wxSizeEvent& event)
 {
 	wxSize newSize = GetClientSize();
-
-	if (m_lastClientSize.IsFullySpecified() && m_scale > 0.0)
-	{
-		// 计算窗口中心点在世界坐标中对应的位置
-		auto oldCenterScreen = wxPoint(m_lastClientSize.GetWidth() / 2, 
-									   m_lastClientSize.GetHeight() / 2);
-		wxPoint2DDouble centerWorld = ScreenToWorld(oldCenterScreen);
-
-		// 计算新的偏移量，让这个点仍然在新窗口中心
-		wxPoint newCenterScreen(newSize.GetWidth() / 2,
-							    newSize.GetHeight() / 2);
-		wxPoint2DDouble newOffset = centerWorld -
-			wxPoint2DDouble(newCenterScreen.x / m_scale,
-							newCenterScreen.y / m_scale);
-
-		m_offset = -newOffset;
-	}
-
-	m_lastClientSize = newSize;
 
 	auto* cairoRenderer = dynamic_cast<lsCairoRenderer*>(m_renderer);
 	cairoRenderer->Resize(newSize.GetWidth(), newSize.GetHeight());
 
 	event.Skip();
-	Refresh();
+}
+
+void lsCanvas::OnCaptureLost(wxMouseCaptureLostEvent& event)
+{
+	m_dragging = false;
 }
 
 void lsCanvas::SetView(wxView* view)
@@ -90,54 +116,23 @@ void lsCanvas::ResetView()
 	m_view = nullptr;
 }
 
-void lsCanvas::FitToWorld(const wxRect2DDouble& worldBox)
-{
-	wxSize clientSize = GetClientSize();
-
-	double paddingFactor = 0.9;
-
-	double scalex = clientSize.GetWidth() / worldBox.m_width;
-	double scaley = clientSize.GetHeight() / worldBox.m_height;
-	m_scale = std::min(scalex, scaley) * paddingFactor;
-
-	double screenw = worldBox.m_width * m_scale;
-	double screenh = worldBox.m_height * m_scale;
-
-	double extrax = (clientSize.GetWidth() - screenw) / 2.0;
-	double extray = (clientSize.GetHeight() - screenh) / 2.0;
-
-	m_offset = wxPoint2DDouble(-worldBox.m_x + extrax / m_scale,
-		-worldBox.m_y + extray / m_scale);
-
-	Refresh();
-}
-
 void lsCanvas::SetRenderer(lsRenderer* renderer)
 {
 	m_renderer = renderer;
 }
 
-void lsCanvas::OnMouseEvent(wxMouseEvent& event)
+void lsCanvas::ZoomToFit()
 {
-	
-}
+	if (!m_view)
+		return;
 
-wxPoint lsCanvas::WorldToScreen(const wxPoint2DDouble& pt) const
-{
-	double x = (pt.m_x + m_offset.m_x) * m_scale;
-	double y = (pt.m_y + m_offset.m_y) * m_scale;
-	return wxPoint(static_cast<int>(x), static_cast<int>(y));
-}
+	auto doc = wxDynamicCast(m_view->GetDocument(), lsDocument);
+	if (!doc)
+		return;
 
-wxPoint2DDouble lsCanvas::ScreenToWorld(const wxPoint& pt) const
-{
-	return wxPoint2DDouble(pt.x / m_scale - m_offset.m_x,
-						   pt.y / m_scale - m_offset.m_y);
-}
+	m_viewControl.ZoomToFit(doc->GetBoundbox(), GetClientSize());
 
-void lsCanvas::DrawLine(wxDC& dc, const wxPoint2DDouble& s, const wxPoint2DDouble& e)
-{
-	dc.DrawLine(WorldToScreen(s), WorldToScreen(e));
+	Refresh();
 }
 
 lsCairoRenderer::lsCairoRenderer(wxWindow* window, int width, int height)

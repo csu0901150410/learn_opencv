@@ -15,6 +15,7 @@ lsView::lsView()
 
 	// 绑定事件处理函数
 	Bind(wxEVT_MENU, &lsView::OnGenerateRandomLines, this, ID_MENU_RANDOM_LINES);
+	Bind(wxEVT_MENU, &lsView::OnCanvasZoomToFit, this, ID_MENU_CANVAS_FIT);
 }
 
 bool lsView::OnCreate(wxDocument* doc, long flags)
@@ -44,7 +45,8 @@ void lsView::OnUpdate(wxView* sender, wxObject* hint /*= (wxObject *)nullptr*/)
 	auto* doc = wxDynamicCast(GetDocument(), lsDocument);
 	if (doc && m_canvas)
 	{
-		m_canvas->FitToWorld(doc->GetBoundbox());
+		// 触发画布重绘
+		m_canvas->Refresh();
 	}
 }
 
@@ -73,6 +75,13 @@ void lsView::OnGenerateRandomLines(wxCommandEvent& event)
 	{
 		doc->GenerateRandomLines();
 	}
+}
+
+void lsView::OnCanvasZoomToFit(wxCommandEvent& event)
+{
+	if (!m_canvas)
+		return;
+	m_canvas->ZoomToFit();
 }
 
 lsDocument* lsView::GetDocument()

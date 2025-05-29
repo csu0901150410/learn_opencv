@@ -58,6 +58,7 @@ wxMenuBar* lsMainFrame::CreateMenuBar()
 
 	wxMenu *editMenu = new wxMenu;
 	editMenu->Append(ID_MENU_RANDOM_LINES, wxT("Generate Random Lines ..."));
+	editMenu->Append(ID_MENU_CANVAS_FIT, wxT("Zoom to fit"));
 
 	menuBar->Append(fileMenu, wxT("File"));
 	menuBar->Append(editMenu, wxT("Edit"));

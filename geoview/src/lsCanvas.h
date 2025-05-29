@@ -5,6 +5,8 @@
 
 #include "cairo.h"
 
+#include "lsViewControl.h"
+
 class lsRenderer
 {
 public:
@@ -78,27 +80,25 @@ public:
 	void SetView(wxView* view);
 	void ResetView();
 
-	void FitToWorld(const wxRect2DDouble& worldBox);
-
 	void SetRenderer(lsRenderer* renderer);
+
+	void ZoomToFit();
 
 private:
 	virtual void OnPaint(wxPaintEvent& event);
+	virtual void OnMouse(wxMouseEvent& event);
 	virtual void OnSize(wxSizeEvent& event);
-	void OnMouseEvent(wxMouseEvent& event);
 
-	wxPoint WorldToScreen(const wxPoint2DDouble& pt) const;
-	wxPoint2DDouble ScreenToWorld(const wxPoint& pt) const;
-
-	void DrawLine(wxDC& dc, const wxPoint2DDouble& s, const wxPoint2DDouble& e);
+	void OnCaptureLost(wxMouseCaptureLostEvent& event);
 
 private:
 	wxView* m_view;
 
 	lsRenderer* m_renderer;
 
-	double m_scale;
-	wxPoint2DDouble m_offset;
+	lsViewControl m_viewControl;
+	bool m_dragging = false;
+	wxPoint m_lastMousePos;
 
 	wxSize m_lastClientSize;
 };

@@ -142,6 +142,7 @@
     <ClCompile Include="src\lsDocument.cpp" />
     <ClCompile Include="src\lsMainFrame.cpp" />
     <ClCompile Include="src\lsView.cpp" />
+    <ClCompile Include="src\lsViewControl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lsApp.h" />
@@ -149,6 +150,7 @@
     <ClInclude Include="src\lsDocument.h" />
     <ClInclude Include="src\lsMainFrame.h" />
     <ClInclude Include="src\lsView.h" />
+    <ClInclude Include="src\lsViewControl.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

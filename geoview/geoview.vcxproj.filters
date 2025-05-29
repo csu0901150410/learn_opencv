@@ -4,39 +4,45 @@
     <ClCompile Include="src\lsApp.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\lsCanvas.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lsDocument.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="src\lsMainFrame.cpp">
       <Filter>src</Filter>
     </ClCompile>
-	<ClCompile Include="src\lsDocument.cpp">
+    <ClCompile Include="src\lsView.cpp">
       <Filter>src</Filter>
     </ClCompile>
-	<ClCompile Include="src\lsView.cpp">
+    <ClCompile Include="src\lsViewControl.cpp">
       <Filter>src</Filter>
     </ClCompile>
-	<ClCompile Include="src\lsCanvas.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="src">
-      <UniqueIdentifier>{f508266d-1fc9-42dc-a2b5-25b9689f3640}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lsApp.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\lsCanvas.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lsDocument.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="src\lsMainFrame.h">
       <Filter>src</Filter>
     </ClInclude>
-	<ClInclude Include="src\lsDocument.h">
+    <ClInclude Include="src\lsView.h">
       <Filter>src</Filter>
     </ClInclude>
-	<ClInclude Include="src\lsView.h">
+    <ClInclude Include="src\lsViewControl.h">
       <Filter>src</Filter>
     </ClInclude>
-	<ClInclude Include="src\lsCanvas.h">
-      <Filter>src</Filter>
-    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{1fffbb44-837f-4f6f-b7fc-75ea1ab00dd0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

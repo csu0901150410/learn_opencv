@@ -20,6 +20,7 @@ public:
 	virtual bool OnClose(bool deleteWindow = true);
 
 	void OnGenerateRandomLines(wxCommandEvent& event);
+	void OnCanvasZoomToFit(wxCommandEvent& event);
 
 public:
 	lsDocument* GetDocument();

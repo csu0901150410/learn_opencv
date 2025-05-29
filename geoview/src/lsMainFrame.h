@@ -10,6 +10,7 @@ enum
 {
 	ID_CANVAS = wxID_HIGHEST + 1,
 	ID_MENU_RANDOM_LINES,
+	ID_MENU_CANVAS_FIT,
 };
 
 /**
