@@ -2,18 +2,22 @@
 
 wxPoint2DDouble lsViewControl::WorldToScreen(const wxPoint2DDouble& pt) const
 {
-	wxPoint2DDouble screen;
+	/*wxPoint2DDouble screen;
 	screen.m_x = pt.m_x * m_scale + m_offset.m_x;
 	screen.m_y = pt.m_y * m_scale + m_offset.m_y;
-	return screen;
+	return screen;*/
+
+	return GetWorldToScreenMatrix().TransformPoint(pt);
 }
 
 wxPoint2DDouble lsViewControl::ScreenToWorld(const wxPoint2DDouble& pt) const
 {
-	wxPoint2DDouble world;
+	/*wxPoint2DDouble world;
 	world.m_x = (pt.m_x - m_offset.m_x) / m_scale;
 	world.m_y = (pt.m_y - m_offset.m_y) / m_scale;
-	return world;
+	return world;*/
+
+	return GetScreenToWorldMatrix().TransformPoint(pt);
 }
 
 void lsViewControl::Zoom(double factor, const wxPoint2DDouble& anchor_screen)
@@ -56,5 +60,20 @@ void lsViewControl::ZoomToFit(const wxRect2DDouble& worldBox, const wxSize& scre
 
 	m_offset = wxPoint2DDouble(-worldBox.m_x + extrax / m_scale,
 		-worldBox.m_y + extray / m_scale);
+}
+
+wxAffineMatrix2D lsViewControl::GetWorldToScreenMatrix() const
+{
+	wxAffineMatrix2D mat;
+	mat.Translate(m_offset.m_x, m_offset.m_y);
+	mat.Scale(m_scale, m_scale);
+	return mat;
+}
+
+wxAffineMatrix2D lsViewControl::GetScreenToWorldMatrix() const
+{
+	wxAffineMatrix2D inv = GetWorldToScreenMatrix();
+	inv.Invert();
+	return inv;
 }
 

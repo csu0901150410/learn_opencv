@@ -3,6 +3,8 @@
 #include <wx/wx.h>
 #include <wx/docview.h>
 
+class lsRenderer;
+
 struct LineSegment
 {
 	wxPoint2DDouble s;
@@ -19,6 +21,9 @@ public:
 
 	std::ostream& SaveObject(std::ostream& stream);
 	std::istream& LoadObject(std::istream& stream);
+
+public:
+	void Draw(lsRenderer& renderer);
 
 public:
 	const std::vector<LineSegment>& GetSegments() const;

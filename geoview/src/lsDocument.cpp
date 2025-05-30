@@ -3,6 +3,8 @@
 
 #include "lsApp.h"
 
+#include "lsCanvas.h"// for lsRenderer
+
 wxIMPLEMENT_DYNAMIC_CLASS(lsDocument, wxDocument);
 
 lsDocument::lsDocument()
@@ -19,6 +21,15 @@ std::ostream& lsDocument::SaveObject(std::ostream& ostream)
 std::istream& lsDocument::LoadObject(std::istream& istream)
 {
 	return istream;
+}
+
+void lsDocument::Draw(lsRenderer& renderer)
+{
+	// 定义了entity接口之后，可以把renderer传入entity由其确定如何绘制
+	for (const auto& seg : GetSegments())
+	{
+		renderer.DrawLine(seg.s, seg.e);
+	}
 }
 
 const std::vector<LineSegment>& lsDocument::GetSegments() const

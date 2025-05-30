@@ -22,6 +22,8 @@ public:
 	virtual void DrawLine(const wxPoint2DDouble& s, const wxPoint2DDouble& e);
 
 	virtual void Resize(int width, int height) = 0;
+
+	virtual void SetTransform(const wxAffineMatrix2D& mat) = 0;
 };
 
 class lsCairoRenderer : public lsRenderer
@@ -40,6 +42,8 @@ public:
 
 	void Resize(int width, int height) override;
 
+	void SetTransform(const wxAffineMatrix2D& mat) override;
+
 	cairo_surface_t* GetSurface() const;
 
 private:
@@ -51,6 +55,8 @@ private:
 
 private:
 	wxWindow* m_window;
+
+	wxAffineMatrix2D m_matrix;// world2screen matrix
 
 	bool m_initialized = false;// 标记cairo对象是否创建，保证不重复创建和释放
 	cairo_surface_t* m_surface = nullptr;

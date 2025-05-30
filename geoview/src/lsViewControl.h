@@ -16,4 +16,7 @@ public:
 	void Pan(double dx, double dy);
 
 	void ZoomToFit(const wxRect2DDouble& worldBox, const wxSize& screenSize);
+
+	wxAffineMatrix2D GetWorldToScreenMatrix() const;
+	wxAffineMatrix2D GetScreenToWorldMatrix() const;
 };

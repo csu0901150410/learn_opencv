@@ -41,11 +41,14 @@ void lsCanvas::OnPaint(wxPaintEvent& event)
 	{
 		m_renderer->BeginDraw();
 
-		// renderer可以作为一个绘制工具传参到其他类的方法，比如doc，doc中取数据控制绘制
-		for (const auto& seg : doc->GetSegments())
-		{
-			m_renderer->DrawLine(m_viewControl.WorldToScreen(seg.s), m_viewControl.WorldToScreen(seg.e));
-		}
+		//// renderer可以作为一个绘制工具传参到其他类的方法，比如doc，doc中取数据控制绘制
+		//for (const auto& seg : doc->GetSegments())
+		//{
+		//	m_renderer->DrawLine(m_viewControl.WorldToScreen(seg.s), m_viewControl.WorldToScreen(seg.e));
+		//}
+
+		m_renderer->SetTransform(m_viewControl.GetWorldToScreenMatrix());
+		doc->Draw(*m_renderer);
 
 		m_renderer->EndDraw();
 	}
@@ -222,8 +225,10 @@ void lsCairoRenderer::SetColor(const wxColour& color)
 
 void lsCairoRenderer::DrawLine(double sx, double sy, double ex, double ey)
 {
-	cairo_move_to(m_cr, sx, sy);
-	cairo_line_to(m_cr, ex, ey);
+	auto ps = m_matrix.TransformPoint({sx, sy});
+	auto pe = m_matrix.TransformPoint({ex, ey});
+	cairo_move_to(m_cr, ps.m_x, ps.m_y);
+	cairo_line_to(m_cr, pe.m_x, pe.m_y);
 	cairo_stroke(m_cr);
 }
 
@@ -240,6 +245,11 @@ void lsCairoRenderer::Resize(int width, int height)
 	// 绘图尺寸变了，释放原有绘图缓冲区并重新申请
 	release_buffer();
 	allocate_buffer();
+}
+
+void lsCairoRenderer::SetTransform(const wxAffineMatrix2D& mat)
+{
+	m_matrix = mat;
 }
 
 cairo_surface_t* lsCairoRenderer::GetSurface() const
