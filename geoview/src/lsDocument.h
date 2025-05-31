@@ -32,6 +32,9 @@ public:
 
 	wxRect2DDouble GetBoundbox() const;
 
+	void SelectAll();
+	void DeselectAll();
+
 private:
 
 	std::vector<std::shared_ptr<lsEntity>> m_entities;

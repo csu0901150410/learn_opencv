@@ -3,6 +3,7 @@
 
 #include "lsCanvas.h"
 #include "lsDocument.h"
+#include "lsEntity.h"
 
 lsCanvas::lsCanvas(wxView* view, wxWindow* parent /*= nullptr*/, lsRenderer* renderer /*= nullptr*/)
 	: wxScrolledWindow(parent ? parent : view->GetFrame())
@@ -21,6 +22,7 @@ lsCanvas::lsCanvas(wxView* view, wxWindow* parent /*= nullptr*/, lsRenderer* ren
 	Bind(wxEVT_MOTION, &lsCanvas::OnMouse, this);
 	Bind(wxEVT_SIZE, &lsCanvas::OnSize, this);
 	Bind(wxEVT_MOUSE_CAPTURE_LOST, &lsCanvas::OnCaptureLost, this);
+	Bind(wxEVT_LEFT_DOWN, &lsCanvas::OnLeftDown, this);
 }
 
 lsCanvas::~lsCanvas()
@@ -103,6 +105,47 @@ void lsCanvas::OnCaptureLost(wxMouseCaptureLostEvent& event)
 	m_dragging = false;
 }
 
+void lsCanvas::OnLeftDown(wxMouseEvent& event)
+{
+	wxPoint pos = event.GetPosition();
+	wxPoint2DDouble worldPos = m_viewControl.ScreenToWorld(pos);
+
+	auto doc = wxDynamicCast(m_view->GetDocument(), lsDocument);
+	if (!doc)
+		return;
+
+	const double pickTol = 5.0 / m_viewControl.GetZoomFactor();
+	bool bMultipleSelMode = event.ControlDown();
+
+	// 遍历数据的行为，最好放到document内部
+	bool bHit = false;
+	for (auto& entity : doc->GetEntities())
+	{
+		if (entity->HitTest(worldPos, pickTol))
+		{
+			if (bMultipleSelMode)
+				entity->SetSelected(true);
+			else
+			{
+				// 单选模式，取消其他选择，再选中当前
+				doc->DeselectAll();
+				entity->SetSelected(true);
+			}
+
+			bHit = true;
+			break;
+		}
+	}
+
+	// 单选模式，点击空白区域，取消所有选择
+	if (!bMultipleSelMode && !bHit)
+	{
+		doc->DeselectAll();
+	}
+
+	Refresh();
+}
+
 void lsCanvas::SetView(wxView* view)
 {
 	m_view = view;
@@ -151,14 +194,6 @@ void lsCairoRenderer::BeginDraw()
 	cairo_set_source_rgb(m_cr, 0, 0, 0);
 	cairo_rectangle(m_cr, 0, 0, m_width, m_height);
 	cairo_fill(m_cr);
-
-	// 设置线宽线色
-	cairo_set_line_width(m_cr, m_lineWidth);
-	cairo_set_source_rgba(m_cr, 
-		m_color.Red() / 255.0,
-		m_color.Green() / 255.0,
-		m_color.Blue() / 255.0,
-		m_color.Alpha() / 255.0);
 }
 
 void lsCairoRenderer::EndDraw()
@@ -209,12 +244,16 @@ void lsCairoRenderer::EndDraw()
 
 void lsCairoRenderer::SetLineWidth(double width)
 {
-	m_lineWidth = width;
+	cairo_set_line_width(m_cr, width);
 }
 
 void lsCairoRenderer::SetColor(const wxColour& color)
 {
-	m_color = color;
+	cairo_set_source_rgba(m_cr,
+		color.Red() / 255.0,
+		color.Green() / 255.0,
+		color.Blue() / 255.0,
+		color.Alpha() / 255.0);
 }
 
 void lsCairoRenderer::DrawLine(double sx, double sy, double ex, double ey)
@@ -244,6 +283,14 @@ void lsCairoRenderer::Resize(int width, int height)
 void lsCairoRenderer::SetTransform(const wxAffineMatrix2D& mat)
 {
 	m_matrix = mat;
+}
+
+void lsCairoRenderer::SetHighlight(bool on)
+{
+	if (on)
+		SetColor(*wxCYAN);
+	else
+		SetColor(*wxRED);
 }
 
 cairo_surface_t* lsCairoRenderer::GetSurface() const

@@ -13,6 +13,8 @@ public:
 
 	wxRect2DDouble GetBoundBox() const override;
 
+	bool HitTest(const wxPoint2DDouble& pos, double tol) const override;
+
 private:
 	wxPoint2DDouble s;
 	wxPoint2DDouble e;

@@ -67,3 +67,15 @@ wxRect2DDouble lsDocument::GetBoundbox() const
 	return box;
 }
 
+void lsDocument::SelectAll()
+{
+	for (auto& entity : m_entities)
+		entity->SetSelected(true);
+}
+
+void lsDocument::DeselectAll()
+{
+	for (auto& entity : m_entities)
+		entity->SetSelected(false);
+}
+

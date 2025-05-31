@@ -79,7 +79,7 @@ void lsView::OnGenerateRandomLines(wxCommandEvent& event)
 		double maxy = 800;
 
 		doc->ClearEntities();
-		for (int i = 0; i < 100; ++i)
+		for (int i = 0; i < 20; ++i)
 		{
 			wxPoint2DDouble p1(rand() % static_cast<int>(maxx),
 				rand() % static_cast<int>(maxy));

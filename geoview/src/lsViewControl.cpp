@@ -77,3 +77,8 @@ wxAffineMatrix2D lsViewControl::GetScreenToWorldMatrix() const
 	return inv;
 }
 
+double lsViewControl::GetZoomFactor() const
+{
+	return m_scale;
+}
+

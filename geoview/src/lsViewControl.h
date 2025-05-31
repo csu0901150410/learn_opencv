@@ -19,4 +19,6 @@ public:
 
 	wxAffineMatrix2D GetWorldToScreenMatrix() const;
 	wxAffineMatrix2D GetScreenToWorldMatrix() const;
+
+	double GetZoomFactor() const;
 };

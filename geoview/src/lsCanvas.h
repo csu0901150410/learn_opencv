@@ -24,6 +24,8 @@ public:
 	virtual void Resize(int width, int height) = 0;
 
 	virtual void SetTransform(const wxAffineMatrix2D& mat) = 0;
+
+	virtual void SetHighlight(bool on) = 0;
 };
 
 class lsCairoRenderer : public lsRenderer
@@ -43,6 +45,8 @@ public:
 	void Resize(int width, int height) override;
 
 	void SetTransform(const wxAffineMatrix2D& mat) override;
+
+	void SetHighlight(bool on) override;
 
 	cairo_surface_t* GetSurface() const;
 
@@ -66,9 +70,6 @@ private:
 	int m_stride = 0;
 	int m_crBufferSize = 0;
 	int m_wxBufferSize = 0;
-
-	double m_lineWidth = 1.0;
-	wxColour m_color = *wxRED;
 
 	unsigned char* m_crImageBuffer = nullptr;// cairo绘图缓冲区，四通道
 	unsigned char* m_wxImageBuffer = nullptr;// wxImage转换缓冲区，三通道
@@ -96,6 +97,7 @@ private:
 	virtual void OnSize(wxSizeEvent& event);
 
 	void OnCaptureLost(wxMouseCaptureLostEvent& event);
+	void OnLeftDown(wxMouseEvent& event);
 
 private:
 	wxView* m_view;
