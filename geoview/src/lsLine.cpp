@@ -60,3 +60,10 @@ bool lsLine::HitTest(const wxPoint2DDouble& p, double tol) const
 	return (dis <= tol);
 }
 
+bool lsLine::IntersectWith(const wxRect2DDouble& box) const
+{
+	// 要考虑线段是否和box真正相交
+	wxRect2DDouble segbox = GetBoundBox();
+	return box.Intersects(segbox);
+}
+

@@ -17,12 +17,14 @@ lsCanvas::lsCanvas(wxView* view, wxWindow* parent /*= nullptr*/, lsRenderer* ren
 	Bind(wxEVT_MOUSEWHEEL, &lsCanvas::OnMouse, this);
 	Bind(wxEVT_RIGHT_DOWN, &lsCanvas::OnMouse, this);
 	Bind(wxEVT_RIGHT_UP, &lsCanvas::OnMouse, this);
+	Bind(wxEVT_LEFT_DOWN, &lsCanvas::OnMouse, this);
+	Bind(wxEVT_LEFT_UP, &lsCanvas::OnMouse, this);
 	Bind(wxEVT_MIDDLE_DOWN, &lsCanvas::OnMouse, this);
 	Bind(wxEVT_MIDDLE_UP, &lsCanvas::OnMouse, this);
 	Bind(wxEVT_MOTION, &lsCanvas::OnMouse, this);
 	Bind(wxEVT_SIZE, &lsCanvas::OnSize, this);
 	Bind(wxEVT_MOUSE_CAPTURE_LOST, &lsCanvas::OnCaptureLost, this);
-	Bind(wxEVT_LEFT_DOWN, &lsCanvas::OnLeftDown, this);
+	//Bind(wxEVT_LEFT_DOWN, &lsCanvas::OnLeftDown, this);
 }
 
 lsCanvas::~lsCanvas()
@@ -45,6 +47,20 @@ void lsCanvas::OnPaint(wxPaintEvent& event)
 
 		m_renderer->SetTransform(m_viewControl.GetWorldToScreenMatrix());
 		doc->Draw(*m_renderer);
+
+		if (m_boxsel)
+		{
+			wxRect2DDouble box(
+				std::min(m_boxselStartPos.x, m_boxselEndPos.x),
+				std::min(m_boxselStartPos.y, m_boxselEndPos.y),
+				std::abs(m_boxselStartPos.x - m_boxselEndPos.x),
+				std::abs(m_boxselStartPos.y - m_boxselEndPos.y)
+			);
+
+			m_renderer->SetColor(*wxGREEN);
+			m_renderer->DrawRectangle(box.m_x, box.m_y, box.m_width, box.m_height);
+			m_renderer->SetColor(*wxRED);
+		}
 
 		m_renderer->EndDraw();
 	}
@@ -87,6 +103,31 @@ void lsCanvas::OnMouse(wxMouseEvent& event)
 		m_viewControl.Pan(delta.x, delta.y);
 		m_lastMousePos = pos;
 		Refresh();
+	}
+	else if (event.LeftDown())
+	{
+		m_boxsel = true;
+		m_boxselStartPos = event.GetPosition();
+		m_boxselEndPos = event.GetPosition();
+		CaptureMouse();
+	}
+	else if (m_boxsel && event.Dragging() && event.LeftIsDown())
+	{
+		m_boxselEndPos = event.GetPosition();
+		Refresh();
+	}
+	else if (event.LeftUp())
+	{
+		if (m_boxsel)
+		{
+			m_boxsel = false;
+			m_boxselEndPos = event.GetPosition();
+			if (HasCapture())
+				ReleaseCapture();
+
+			PerformBoxSelection();
+			Refresh();
+		}
 	}
 }
 
@@ -173,6 +214,31 @@ void lsCanvas::ZoomToFit()
 	m_viewControl.ZoomToFit(doc->GetBoundbox(), GetClientSize());
 
 	Refresh();
+}
+
+void lsCanvas::PerformBoxSelection()
+{
+	wxPoint2DDouble ps = m_viewControl.ScreenToWorld(m_boxselStartPos);
+	wxPoint2DDouble pe = m_viewControl.ScreenToWorld(m_boxselEndPos);
+
+	wxRect2DDouble box(
+		std::min(ps.m_x, pe.m_x),
+		std::min(ps.m_y, pe.m_y),
+		std::abs(ps.m_x - pe.m_x),
+		std::abs(ps.m_y - pe.m_y)
+	);
+
+	auto doc = wxDynamicCast(m_view->GetDocument(), lsDocument);
+	if (!doc)
+		return;
+
+	for (auto& entity : doc->GetEntities())
+	{
+		if (entity->IntersectWith(box))
+			entity->SetSelected(true);
+		else
+			entity->SetSelected(false);
+	}
 }
 
 lsCairoRenderer::lsCairoRenderer(wxWindow* window, int width, int height)
@@ -265,9 +331,15 @@ void lsCairoRenderer::DrawLine(double sx, double sy, double ex, double ey)
 	cairo_stroke(m_cr);
 }
 
-void lsRenderer::DrawLine(const wxPoint2DDouble& s, const wxPoint2DDouble& e)
+void lsCairoRenderer::DrawLine(const wxPoint2DDouble& s, const wxPoint2DDouble& e)
 {
 	DrawLine(s.m_x, s.m_y, e.m_x, e.m_y);
+}
+
+void lsCairoRenderer::DrawRectangle(double x, double y, double w, double h)
+{
+	cairo_rectangle(m_cr, x, y, w, h);
+	cairo_stroke(m_cr);
 }
 
 void lsCairoRenderer::Resize(int width, int height)

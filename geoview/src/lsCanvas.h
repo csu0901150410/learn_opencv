@@ -19,7 +19,9 @@ public:
 	virtual void SetColor(const wxColour& color) = 0;
 
 	virtual void DrawLine(double sx, double sy, double ex, double ey) = 0;
-	virtual void DrawLine(const wxPoint2DDouble& s, const wxPoint2DDouble& e);
+	virtual void DrawLine(const wxPoint2DDouble& s, const wxPoint2DDouble& e) = 0;
+
+	virtual void DrawRectangle(double x, double y, double w, double h) = 0;
 
 	virtual void Resize(int width, int height) = 0;
 
@@ -41,6 +43,9 @@ public:
 	void SetColor(const wxColour& color) override;
 	
 	void DrawLine(double sx, double sy, double ex, double ey) override;
+	void DrawLine(const wxPoint2DDouble& s, const wxPoint2DDouble& e) override;
+
+	void DrawRectangle(double x, double y, double w, double h) override;
 
 	void Resize(int width, int height) override;
 
@@ -91,6 +96,8 @@ public:
 
 	void ZoomToFit();
 
+	void PerformBoxSelection();
+
 private:
 	virtual void OnPaint(wxPaintEvent& event);
 	virtual void OnMouse(wxMouseEvent& event);
@@ -109,4 +116,8 @@ private:
 	wxPoint m_lastMousePos;
 
 	wxSize m_lastClientSize;
+
+	bool m_boxsel;
+	wxPoint m_boxselStartPos;
+	wxPoint m_boxselEndPos;
 };

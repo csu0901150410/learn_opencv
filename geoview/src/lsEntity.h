@@ -16,6 +16,8 @@ public:
 	void SetSelected(bool sel) { m_selected = sel; }
 	bool IsSelected() const { return m_selected; }
 
+	virtual bool IntersectWith(const wxRect2DDouble& box) const = 0;
+
 protected:
 	bool m_selected = false;
 };

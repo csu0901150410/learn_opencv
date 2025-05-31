@@ -15,6 +15,8 @@ public:
 
 	bool HitTest(const wxPoint2DDouble& pos, double tol) const override;
 
+	bool IntersectWith(const wxRect2DDouble& box) const override;
+
 private:
 	wxPoint2DDouble s;
 	wxPoint2DDouble e;
