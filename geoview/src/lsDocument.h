@@ -4,12 +4,7 @@
 #include <wx/docview.h>
 
 class lsRenderer;
-
-struct LineSegment
-{
-	wxPoint2DDouble s;
-	wxPoint2DDouble e;
-};
+class lsEntity;
 
 /**
  * 文档类。存储实际的数据结构，比如图层、图元。
@@ -26,14 +21,20 @@ public:
 	void Draw(lsRenderer& renderer);
 
 public:
-	const std::vector<LineSegment>& GetSegments() const;
 
-	void GenerateRandomLines(int count = 100);
+	bool IsEmpty() const;
+
+	void ClearEntities();
+
+	const std::vector<std::shared_ptr<lsEntity>>& GetEntities() const;
+
+	void AddEntity(std::shared_ptr<lsEntity> entity);
 
 	wxRect2DDouble GetBoundbox() const;
 
 private:
-	std::vector<LineSegment> m_segments;
+
+	std::vector<std::shared_ptr<lsEntity>> m_entities;
 
 private:
 	wxDECLARE_DYNAMIC_CLASS(lsDocument);

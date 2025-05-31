@@ -19,6 +19,9 @@
     <ClCompile Include="src\lsViewControl.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\lsLine.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lsApp.h">
@@ -37,6 +40,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\lsViewControl.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lsEntity.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lsLine.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

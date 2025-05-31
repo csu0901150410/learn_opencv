@@ -5,6 +5,8 @@
 
 #include "lsApp.h"
 
+#include "lsLine.h"
+
 wxIMPLEMENT_DYNAMIC_CLASS(lsView, wxView);
 
 lsView::lsView()
@@ -73,7 +75,22 @@ void lsView::OnGenerateRandomLines(wxCommandEvent& event)
 	auto doc = wxDynamicCast(GetDocument(), lsDocument);
 	if (doc)
 	{
-		doc->GenerateRandomLines();
+		double maxx = 1200;
+		double maxy = 800;
+
+		doc->ClearEntities();
+		for (int i = 0; i < 100; ++i)
+		{
+			wxPoint2DDouble p1(rand() % static_cast<int>(maxx),
+				rand() % static_cast<int>(maxy));
+			wxPoint2DDouble p2(rand() % static_cast<int>(maxx),
+				rand() % static_cast<int>(maxy));
+			doc->AddEntity(std::make_shared<lsLine>(p1, p2, 1.0));
+		}
+		doc->Modify(true);            // 标记文档已修改
+		doc->UpdateAllViews();        // 通知视图刷新
+
+		m_canvas->ZoomToFit();
 	}
 }
 

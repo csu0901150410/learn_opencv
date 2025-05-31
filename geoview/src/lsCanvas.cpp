@@ -37,15 +37,9 @@ void lsCanvas::OnPaint(wxPaintEvent& event)
 	if (!doc)
 		return;
 
-	if (!doc->GetSegments().empty())
+	if (!doc->IsEmpty())
 	{
 		m_renderer->BeginDraw();
-
-		//// renderer可以作为一个绘制工具传参到其他类的方法，比如doc，doc中取数据控制绘制
-		//for (const auto& seg : doc->GetSegments())
-		//{
-		//	m_renderer->DrawLine(m_viewControl.WorldToScreen(seg.s), m_viewControl.WorldToScreen(seg.e));
-		//}
 
 		m_renderer->SetTransform(m_viewControl.GetWorldToScreenMatrix());
 		doc->Draw(*m_renderer);
