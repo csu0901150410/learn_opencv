@@ -28,6 +28,15 @@
     <ClCompile Include="src\lsBoundbox.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\lsDxfReader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\dxflib\dl_dxf.cpp">
+      <Filter>3rdparty\dxflib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdparty\dxflib\dl_writer_ascii.cpp">
+      <Filter>3rdparty\dxflib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lsApp.h">
@@ -63,10 +72,52 @@
     <ClInclude Include="src\lsBoundbox.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\lsDxfReader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\dxflib\dl_attributes.h">
+      <Filter>3rdparty\dxflib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\dxflib\dl_codes.h">
+      <Filter>3rdparty\dxflib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\dxflib\dl_creationadapter.h">
+      <Filter>3rdparty\dxflib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\dxflib\dl_creationinterface.h">
+      <Filter>3rdparty\dxflib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\dxflib\dl_dxf.h">
+      <Filter>3rdparty\dxflib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\dxflib\dl_entities.h">
+      <Filter>3rdparty\dxflib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\dxflib\dl_exception.h">
+      <Filter>3rdparty\dxflib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\dxflib\dl_extrusion.h">
+      <Filter>3rdparty\dxflib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\dxflib\dl_global.h">
+      <Filter>3rdparty\dxflib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\dxflib\dl_writer.h">
+      <Filter>3rdparty\dxflib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdparty\dxflib\dl_writer_ascii.h">
+      <Filter>3rdparty\dxflib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
       <UniqueIdentifier>{1fffbb44-837f-4f6f-b7fc-75ea1ab00dd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdparty">
+      <UniqueIdentifier>{65055bf1-c971-4441-9465-fc2c420716db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdparty\dxflib">
+      <UniqueIdentifier>{f6bf12ce-a952-4ebb-9953-2fbf5b3d16ae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

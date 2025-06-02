@@ -19,10 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\3rdparty\dxflib\dl_dxf.cpp" />
+    <ClCompile Include="..\3rdparty\dxflib\dl_writer_ascii.cpp" />
     <ClCompile Include="src\lsApp.cpp" />
     <ClCompile Include="src\lsBoundbox.cpp" />
     <ClCompile Include="src\lsCanvas.cpp" />
     <ClCompile Include="src\lsDocument.cpp" />
+    <ClCompile Include="src\lsDxfReader.cpp" />
     <ClCompile Include="src\lsLine.cpp" />
     <ClCompile Include="src\lsMainFrame.cpp" />
     <ClCompile Include="src\lsPoint.cpp" />
@@ -30,11 +33,23 @@
     <ClCompile Include="src\lsViewControl.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\3rdparty\dxflib\dl_attributes.h" />
+    <ClInclude Include="..\3rdparty\dxflib\dl_codes.h" />
+    <ClInclude Include="..\3rdparty\dxflib\dl_creationadapter.h" />
+    <ClInclude Include="..\3rdparty\dxflib\dl_creationinterface.h" />
+    <ClInclude Include="..\3rdparty\dxflib\dl_dxf.h" />
+    <ClInclude Include="..\3rdparty\dxflib\dl_entities.h" />
+    <ClInclude Include="..\3rdparty\dxflib\dl_exception.h" />
+    <ClInclude Include="..\3rdparty\dxflib\dl_extrusion.h" />
+    <ClInclude Include="..\3rdparty\dxflib\dl_global.h" />
+    <ClInclude Include="..\3rdparty\dxflib\dl_writer.h" />
+    <ClInclude Include="..\3rdparty\dxflib\dl_writer_ascii.h" />
     <ClInclude Include="src\lsApp.h" />
     <ClInclude Include="src\lsBoundbox.h" />
     <ClInclude Include="src\lsCanvas.h" />
     <ClInclude Include="src\lsDefs.h" />
     <ClInclude Include="src\lsDocument.h" />
+    <ClInclude Include="src\lsDxfReader.h" />
     <ClInclude Include="src\lsEntity.h" />
     <ClInclude Include="src\lsLine.h" />
     <ClInclude Include="src\lsMainFrame.h" />
@@ -130,9 +145,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(CPP_LIBS)\wxWidgets\include;$(CPP_LIBS)\wxWidgets\include\msvc;$(CPP_LIBS)\cairo\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_LIBS)\wxWidgets\include;$(CPP_LIBS)\wxWidgets\include\msvc;$(CPP_LIBS)\cairo\include;../3rdparty/dxflib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

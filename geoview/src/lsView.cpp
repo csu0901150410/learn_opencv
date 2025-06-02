@@ -6,6 +6,7 @@
 #include "lsApp.h"
 
 #include "lsLine.h"
+#include "lsDxfReader.h"
 
 wxIMPLEMENT_DYNAMIC_CLASS(lsView, wxView);
 
@@ -18,6 +19,7 @@ lsView::lsView()
 	// 绑定事件处理函数
 	Bind(wxEVT_MENU, &lsView::OnGenerateRandomLines, this, ID_MENU_RANDOM_LINES);
 	Bind(wxEVT_MENU, &lsView::OnCanvasZoomToFit, this, ID_MENU_CANVAS_FIT);
+	Bind(wxEVT_MENU, &lsView::OnLoadDxfFile, this, ID_MENU_LOAD_DXF);
 }
 
 bool lsView::OnCreate(wxDocument* doc, long flags)
@@ -80,7 +82,7 @@ void lsView::OnGenerateRandomLines(wxCommandEvent& event)
 		double maxy = 800;
 
 		doc->ClearEntities();
-		for (int i = 0; i < 2000; ++i)
+		for (int i = 0; i < 20000; ++i)
 		{
 			wxPoint2DDouble p1(rand() % static_cast<int>(maxx),
 				rand() % static_cast<int>(maxy));
@@ -100,6 +102,35 @@ void lsView::OnCanvasZoomToFit(wxCommandEvent& event)
 	if (!m_canvas)
 		return;
 	m_canvas->ZoomToFit();
+}
+
+void lsView::OnLoadDxfFile(wxCommandEvent& event)
+{
+	wxFileDialog dlg(
+		wxGetApp().GetTopWindow(),
+		wxT("Select DXF File"),
+		"",
+		"",
+		wxT("DXF File (*.dxf)|*.dxf"),
+		wxFD_OPEN | wxFD_FILE_MUST_EXIST
+	);
+
+	if (wxID_OK == dlg.ShowModal())
+	{
+		wxString filepath = dlg.GetPath();
+		auto doc = wxDynamicCast(GetDocument(), lsDocument);
+		if (doc)
+		{
+			doc->ClearEntities();
+
+			lsDxfReader dxfReader;
+			dxfReader.import(doc, filepath.ToStdString());
+
+			doc->Modify(true);            // 标记文档已修改
+			doc->UpdateAllViews();        // 通知视图刷新
+			m_canvas->ZoomToFit();
+		}
+	}
 }
 
 lsDocument* lsView::GetDocument()

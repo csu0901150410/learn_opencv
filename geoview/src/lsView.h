@@ -21,6 +21,7 @@ public:
 
 	void OnGenerateRandomLines(wxCommandEvent& event);
 	void OnCanvasZoomToFit(wxCommandEvent& event);
+	void OnLoadDxfFile(wxCommandEvent& event);
 
 public:
 	lsDocument* GetDocument();
