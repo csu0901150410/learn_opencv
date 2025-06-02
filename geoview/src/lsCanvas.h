@@ -28,6 +28,8 @@ public:
 	virtual void SetTransform(const wxAffineMatrix2D& mat) = 0;
 
 	virtual void SetHighlight(bool on) = 0;
+
+	virtual wxBitmap ToBitmap() const = 0;
 };
 
 class lsCairoRenderer : public lsRenderer
@@ -52,6 +54,8 @@ public:
 	void SetTransform(const wxAffineMatrix2D& mat) override;
 
 	void SetHighlight(bool on) override;
+
+	wxBitmap ToBitmap() const override;
 
 	cairo_surface_t* GetSurface() const;
 
@@ -98,6 +102,9 @@ public:
 
 	void PerformBoxSelection();
 
+	void MakeDirty();
+	void UpdateBitmap();
+
 private:
 	virtual void OnPaint(wxPaintEvent& event);
 	virtual void OnMouse(wxMouseEvent& event);
@@ -110,6 +117,9 @@ private:
 	wxView* m_view;
 
 	lsRenderer* m_renderer;
+
+	wxBitmap m_cachedBitmap;
+	bool m_bDirty = true;
 
 	lsViewControl m_viewControl;
 	bool m_dragging = false;

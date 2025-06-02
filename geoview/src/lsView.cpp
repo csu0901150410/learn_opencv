@@ -48,6 +48,7 @@ void lsView::OnUpdate(wxView* sender, wxObject* hint /*= (wxObject *)nullptr*/)
 	if (doc && m_canvas)
 	{
 		// 触发画布重绘
+		m_canvas->MakeDirty();
 		m_canvas->Refresh();
 	}
 }
@@ -79,7 +80,7 @@ void lsView::OnGenerateRandomLines(wxCommandEvent& event)
 		double maxy = 800;
 
 		doc->ClearEntities();
-		for (int i = 0; i < 20; ++i)
+		for (int i = 0; i < 2000; ++i)
 		{
 			wxPoint2DDouble p1(rand() % static_cast<int>(maxx),
 				rand() % static_cast<int>(maxy));

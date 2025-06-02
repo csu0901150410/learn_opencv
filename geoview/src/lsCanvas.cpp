@@ -34,41 +34,34 @@ lsCanvas::~lsCanvas()
 
 void lsCanvas::OnPaint(wxPaintEvent& event)
 {
-	if (!m_view)
-		return;
+	wxPaintDC dc(this);
+	UpdateBitmap();
 
-	auto doc = wxDynamicCast(m_view->GetDocument(), lsDocument);
-	if (!doc)
-		return;
-
-	if (!doc->IsEmpty())
-	{
-		m_renderer->BeginDraw();
-
-		m_renderer->SetTransform(m_viewControl.GetWorldToScreenMatrix());
-		doc->Draw(*m_renderer);
-
-		if (m_boxsel)
-		{
-			wxRect2DDouble box(
-				std::min(m_boxselStartPos.x, m_boxselEndPos.x),
-				std::min(m_boxselStartPos.y, m_boxselEndPos.y),
-				std::abs(m_boxselStartPos.x - m_boxselEndPos.x),
-				std::abs(m_boxselStartPos.y - m_boxselEndPos.y)
-			);
-
-			m_renderer->SetColor(*wxGREEN);
-			m_renderer->DrawRectangle(box.m_x, box.m_y, box.m_width, box.m_height);
-			m_renderer->SetColor(*wxRED);
-		}
-
-		m_renderer->EndDraw();
-	}
+	if (m_cachedBitmap.IsOk())
+		dc.DrawBitmap(m_cachedBitmap, 0, 0);
 	else
 	{
-		wxAutoBufferedPaintDC dc(this);
 		dc.SetBackground(*wxBLACK_BRUSH);
 		dc.Clear();
+	}
+
+	// 画辅助线
+	if (m_boxsel)
+	{
+		dc.SetPen(wxPen(*wxWHITE, 2));
+		dc.SetBrush(*wxTRANSPARENT_BRUSH);
+
+		{
+			int minx = std::min(m_boxselStartPos.x, m_boxselEndPos.x);
+			int miny = std::min(m_boxselStartPos.y, m_boxselEndPos.y);
+			int maxx = std::max(m_boxselStartPos.x, m_boxselEndPos.x);
+			int maxy = std::max(m_boxselStartPos.y, m_boxselEndPos.y);
+
+			wxPoint lt(minx, miny);
+			wxPoint rb(maxx, maxy);
+			wxRect rect(lt, rb);
+			dc.DrawRectangle(rect);
+		}
 	}
 }
 
@@ -79,6 +72,8 @@ void lsCanvas::OnMouse(wxMouseEvent& event)
 		// 滚轮缩放
 		double zoomFactor = (event.GetWheelRotation() > 0) ? 1.1 : 1.0 / 1.1;
 		m_viewControl.Zoom(zoomFactor, event.GetPosition());
+
+		MakeDirty();
 		Refresh();
 	}
 	else if (event.RightDown() || event.MiddleDown())
@@ -102,6 +97,8 @@ void lsCanvas::OnMouse(wxMouseEvent& event)
 		wxPoint delta = pos - m_lastMousePos;
 		m_viewControl.Pan(delta.x, delta.y);
 		m_lastMousePos = pos;
+
+		MakeDirty();
 		Refresh();
 	}
 	else if (event.LeftDown())
@@ -126,6 +123,8 @@ void lsCanvas::OnMouse(wxMouseEvent& event)
 				ReleaseCapture();
 
 			PerformBoxSelection();
+
+			MakeDirty();
 			Refresh();
 		}
 	}
@@ -137,6 +136,8 @@ void lsCanvas::OnSize(wxSizeEvent& event)
 
 	auto* cairoRenderer = dynamic_cast<lsCairoRenderer*>(m_renderer);
 	cairoRenderer->Resize(newSize.GetWidth(), newSize.GetHeight());
+
+	MakeDirty();
 
 	event.Skip();
 }
@@ -213,6 +214,8 @@ void lsCanvas::ZoomToFit()
 
 	m_viewControl.ZoomToFit(doc->GetBoundbox(), GetClientSize());
 
+	MakeDirty();
+
 	Refresh();
 }
 
@@ -232,12 +235,59 @@ void lsCanvas::PerformBoxSelection()
 	if (!doc)
 		return;
 
+	if (!wxGetKeyState(WXK_CONTROL))
+		doc->DeselectAll();
+
 	for (auto& entity : doc->GetEntities())
 	{
 		if (entity->IntersectWith(box))
 			entity->SetSelected(true);
-		else
-			entity->SetSelected(false);
+	}
+}
+
+void lsCanvas::MakeDirty()
+{
+	m_bDirty = true;
+}
+
+void lsCanvas::UpdateBitmap()
+{
+	if (!m_bDirty || !IsShown())
+		return;
+
+	if (!m_view)
+		return;
+
+	auto doc = wxDynamicCast(m_view->GetDocument(), lsDocument);
+	if (!doc)
+		return;
+
+	// 重新生成缓存位图
+	if (!doc->IsEmpty())
+	{
+		m_renderer->BeginDraw();
+
+		m_renderer->SetTransform(m_viewControl.GetWorldToScreenMatrix());
+		doc->Draw(*m_renderer);
+
+		/*if (m_boxsel)
+		{
+			wxRect2DDouble box(
+				std::min(m_boxselStartPos.x, m_boxselEndPos.x),
+				std::min(m_boxselStartPos.y, m_boxselEndPos.y),
+				std::abs(m_boxselStartPos.x - m_boxselEndPos.x),
+				std::abs(m_boxselStartPos.y - m_boxselEndPos.y)
+			);
+
+			m_renderer->SetColor(*wxGREEN);
+			m_renderer->DrawRectangle(box.m_x, box.m_y, box.m_width, box.m_height);
+			m_renderer->SetColor(*wxRED);
+		}*/
+
+		m_renderer->EndDraw();
+
+		m_cachedBitmap = m_renderer->ToBitmap();
+		m_bDirty = false;
 	}
 }
 
@@ -293,11 +343,11 @@ void lsCairoRenderer::EndDraw()
 	}
 
 	// 渲染到具体的设备上
-	wxImage image(width, height, m_wxImageBuffer, true);
+	/*wxImage image(width, height, m_wxImageBuffer, true);
 	wxBitmap bitmap(image);
 	wxMemoryDC mdc(bitmap);
 	wxClientDC cdc(m_window);
-	cdc.Blit(0, 0, width, height, &mdc, 0, 0, wxCOPY);
+	cdc.Blit(0, 0, width, height, &mdc, 0, 0, wxCOPY);*/
 
 	// 写到exe文件夹
 	if (0)
@@ -368,6 +418,15 @@ void lsCairoRenderer::SetHighlight(bool on)
 cairo_surface_t* lsCairoRenderer::GetSurface() const
 {
 	return m_surface;
+}
+
+wxBitmap lsCairoRenderer::ToBitmap() const
+{
+	if (!m_wxImageBuffer)
+		return wxBitmap();
+
+	wxImage image(m_width, m_height, m_wxImageBuffer, true);
+	return wxBitmap(image);
 }
 
 void lsCairoRenderer::init_surface()
