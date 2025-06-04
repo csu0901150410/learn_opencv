@@ -19,7 +19,7 @@ public:
 	lsReal area() const;
 	lsPoint center() const;
 
-	bool is_in(const lsPoint& point);
+	bool is_in(const lsPoint& point) const;
 	bool is_contain(const lsBoundbox& box);
 	bool is_intersect(const lsBoundbox& box) const;
 

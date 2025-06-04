@@ -58,7 +58,7 @@ lsPoint lsBoundbox::center() const
 	return lsPoint((left + right) / 2, (bottom + top) / 2);
 }
 
-bool lsBoundbox::is_in(const lsPoint& point)
+bool lsBoundbox::is_in(const lsPoint& point) const
 {
 	if (point.x < left || point.x > right)
 		return false;

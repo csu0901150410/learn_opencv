@@ -64,8 +64,27 @@ bool lsLine::HitTest(const lsPoint& p, double tol) const
 
 bool lsLine::IntersectWith(const lsBoundbox& box) const
 {
-	// 要考虑线段是否和box真正相交
-	lsBoundbox segbox = GetBoundBox();
-	return box.is_intersect(segbox);
-}
+	// Cohen-Sutherland 线段裁剪算法
+	// See https://en.wikipedia.org/wiki/Cohen%E2%80%93Sutherland_algorithm
+	// See https://sighack.com/post/cohen-sutherland-line-clipping-algorithm
 
+	// 策略1
+	// 如果线段两个端点都在box的一侧，则线段完全在box外，线段和box不相交
+	if (s.x < box.left && e.x < box.left)
+		return false;
+	if (s.x > box.right && e.x > box.right)
+		return false;
+	if (s.y < box.bottom && e.y < box.bottom)
+		return false;
+	if (s.y > box.top && e.y > box.top)
+		return false;
+
+	// 策略二
+	// 如果线段完全在box内，则线段和box相交，这种比较适合框选逻辑
+	if (box.is_in(s) && box.is_in(e))
+		return true;
+	else
+		return false;
+
+	return true;
+}
