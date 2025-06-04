@@ -14,3 +14,15 @@ lsPoint::lsPoint(const lsPoint& other)
 	: x(other.x), y(other.y)
 {
 }
+
+lsPoint lsPoint::operator-(const lsPoint& other) const
+{
+	return lsPoint(x - other.x, y - other.y);
+}
+
+lsPoint lsPoint::operator+=(const lsPoint& other)
+{
+	x += other.x;
+	y += other.y;
+	return *this;
+}

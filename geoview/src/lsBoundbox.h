@@ -7,6 +7,7 @@ class lsBoundbox
 {
 public:
 	lsBoundbox();
+	lsBoundbox(lsReal x, lsReal y, lsReal w, lsReal h);
 	lsBoundbox(const lsBoundbox& box);
 
 	void init();
@@ -20,7 +21,7 @@ public:
 
 	bool is_in(const lsPoint& point);
 	bool is_contain(const lsBoundbox& box);
-	bool is_intersect(const lsBoundbox& box);
+	bool is_intersect(const lsBoundbox& box) const;
 
 	void offset(lsReal dx, lsReal dy);
 	void scale(lsReal sx, lsReal sy);

@@ -22,6 +22,7 @@
     <ClCompile Include="..\3rdparty\dxflib\dl_dxf.cpp" />
     <ClCompile Include="..\3rdparty\dxflib\dl_writer_ascii.cpp" />
     <ClCompile Include="src\lsApp.cpp" />
+    <ClCompile Include="src\lsArc.cpp" />
     <ClCompile Include="src\lsBoundbox.cpp" />
     <ClCompile Include="src\lsCanvas.cpp" />
     <ClCompile Include="src\lsDocument.cpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="..\3rdparty\dxflib\dl_writer.h" />
     <ClInclude Include="..\3rdparty\dxflib\dl_writer_ascii.h" />
     <ClInclude Include="src\lsApp.h" />
+    <ClInclude Include="src\lsArc.h" />
     <ClInclude Include="src\lsBoundbox.h" />
     <ClInclude Include="src\lsCanvas.h" />
     <ClInclude Include="src\lsDefs.h" />

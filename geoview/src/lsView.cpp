@@ -84,9 +84,9 @@ void lsView::OnGenerateRandomLines(wxCommandEvent& event)
 		doc->ClearEntities();
 		for (int i = 0; i < 20000; ++i)
 		{
-			wxPoint2DDouble p1(rand() % static_cast<int>(maxx),
+			lsPoint p1(rand() % static_cast<int>(maxx),
 				rand() % static_cast<int>(maxy));
-			wxPoint2DDouble p2(rand() % static_cast<int>(maxx),
+			lsPoint p2(rand() % static_cast<int>(maxx),
 				rand() % static_cast<int>(maxy));
 			doc->AddEntity(std::make_shared<lsLine>(p1, p2, 1.0));
 		}

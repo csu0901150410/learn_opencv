@@ -4,6 +4,7 @@
 #include "lsCanvas.h"
 #include "lsDocument.h"
 #include "lsEntity.h"
+#include "lsBoundbox.h"
 
 lsCanvas::lsCanvas(wxView* view, wxWindow* parent /*= nullptr*/, lsRenderer* renderer /*= nullptr*/)
 	: wxScrolledWindow(parent ? parent : view->GetFrame())
@@ -71,7 +72,8 @@ void lsCanvas::OnMouse(wxMouseEvent& event)
 	{
 		// 滚轮缩放
 		double zoomFactor = (event.GetWheelRotation() > 0) ? 1.1 : 1.0 / 1.1;
-		m_viewControl.Zoom(zoomFactor, event.GetPosition());
+		wxPoint pos = event.GetPosition();
+		m_viewControl.Zoom(zoomFactor, lsPoint(pos.x, pos.y));
 
 		MakeDirty();
 		Refresh();
@@ -104,13 +106,15 @@ void lsCanvas::OnMouse(wxMouseEvent& event)
 	else if (event.LeftDown())
 	{
 		m_boxsel = true;
-		m_boxselStartPos = event.GetPosition();
-		m_boxselEndPos = event.GetPosition();
+		wxPoint pos = event.GetPosition();
+		m_boxselStartPos = lsPoint(pos.x, pos.y);
+		m_boxselEndPos = lsPoint(pos.x, pos.y);
 		CaptureMouse();
 	}
 	else if (m_boxsel && event.Dragging() && event.LeftIsDown())
 	{
-		m_boxselEndPos = event.GetPosition();
+		wxPoint pos = event.GetPosition();
+		m_boxselEndPos = lsPoint(pos.x, pos.y);
 		Refresh();
 	}
 	else if (event.LeftUp())
@@ -118,7 +122,8 @@ void lsCanvas::OnMouse(wxMouseEvent& event)
 		if (m_boxsel)
 		{
 			m_boxsel = false;
-			m_boxselEndPos = event.GetPosition();
+			wxPoint pos = event.GetPosition();
+			m_boxselEndPos = lsPoint(pos.x, pos.y);
 			if (HasCapture())
 				ReleaseCapture();
 
@@ -150,7 +155,8 @@ void lsCanvas::OnCaptureLost(wxMouseCaptureLostEvent& event)
 void lsCanvas::OnLeftDown(wxMouseEvent& event)
 {
 	wxPoint pos = event.GetPosition();
-	wxPoint2DDouble worldPos = m_viewControl.ScreenToWorld(pos);
+	lsPoint pt(pos.x, pos.y);
+	lsPoint worldPos = m_viewControl.ScreenToWorld(pt);
 
 	auto doc = wxDynamicCast(m_view->GetDocument(), lsDocument);
 	if (!doc)
@@ -221,14 +227,14 @@ void lsCanvas::ZoomToFit()
 
 void lsCanvas::PerformBoxSelection()
 {
-	wxPoint2DDouble ps = m_viewControl.ScreenToWorld(m_boxselStartPos);
-	wxPoint2DDouble pe = m_viewControl.ScreenToWorld(m_boxselEndPos);
+	lsPoint ps = m_viewControl.ScreenToWorld(m_boxselStartPos);
+	lsPoint pe = m_viewControl.ScreenToWorld(m_boxselEndPos);
 
-	wxRect2DDouble box(
-		std::min(ps.m_x, pe.m_x),
-		std::min(ps.m_y, pe.m_y),
-		std::abs(ps.m_x - pe.m_x),
-		std::abs(ps.m_y - pe.m_y)
+	lsBoundbox box(
+		std::min(ps.x, pe.x),
+		std::min(ps.y, pe.y),
+		std::abs(ps.x - pe.x),
+		std::abs(ps.y - pe.y)
 	);
 
 	auto doc = wxDynamicCast(m_view->GetDocument(), lsDocument);
@@ -381,9 +387,9 @@ void lsCairoRenderer::DrawLine(double sx, double sy, double ex, double ey)
 	cairo_stroke(m_cr);
 }
 
-void lsCairoRenderer::DrawLine(const wxPoint2DDouble& s, const wxPoint2DDouble& e)
+void lsCairoRenderer::DrawLine(const lsPoint& s, const lsPoint& e)
 {
-	DrawLine(s.m_x, s.m_y, e.m_x, e.m_y);
+	DrawLine(s.x, s.y, e.x, e.y);
 }
 
 void lsCairoRenderer::DrawRectangle(double x, double y, double w, double h)

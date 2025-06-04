@@ -37,6 +37,9 @@
     <ClCompile Include="..\3rdparty\dxflib\dl_writer_ascii.cpp">
       <Filter>3rdparty\dxflib</Filter>
     </ClCompile>
+    <ClCompile Include="src\lsArc.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lsApp.h">
@@ -107,6 +110,9 @@
     </ClInclude>
     <ClInclude Include="..\3rdparty\dxflib\dl_writer_ascii.h">
       <Filter>3rdparty\dxflib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lsArc.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

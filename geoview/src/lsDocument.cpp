@@ -5,6 +5,7 @@
 
 #include "lsCanvas.h"// for lsRenderer
 #include "lsEntity.h"
+#include "lsBoundbox.h"
 
 wxIMPLEMENT_DYNAMIC_CLASS(lsDocument, wxDocument);
 
@@ -53,15 +54,15 @@ void lsDocument::AddEntity(std::shared_ptr<lsEntity> entity)
 	m_entities.push_back(entity);
 }
 
-wxRect2DDouble lsDocument::GetBoundbox() const
+lsBoundbox lsDocument::GetBoundbox() const
 {
-	wxRect2DDouble box(0, 0, 1, 1);
+	lsBoundbox box(0, 0, 1, 1);
 	if (m_entities.empty())
 		return box;
 
 	for (const auto& entity : m_entities)
 	{
-		box.Union(entity->GetBoundBox());
+		box.combine(entity->GetBoundBox());
 	}
 
 	return box;

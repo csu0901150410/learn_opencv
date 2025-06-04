@@ -15,6 +15,14 @@ lsBoundbox::lsBoundbox(const lsBoundbox& box)
 {
 }
 
+lsBoundbox::lsBoundbox(lsReal x, lsReal y, lsReal w, lsReal h)
+{
+	left = x;
+	bottom = y;
+	right = x + w;
+	top = y + h;
+}
+
 void lsBoundbox::init()
 {
 	left = LSMAX;
@@ -65,7 +73,7 @@ bool lsBoundbox::is_contain(const lsBoundbox& box)
 	return is_in(c1) && is_in(c2);
 }
 
-bool lsBoundbox::is_intersect(const lsBoundbox& box)
+bool lsBoundbox::is_intersect(const lsBoundbox& box) const
 {
 	if (left > box.right || right < box.left
 		|| bottom > box.top || top < box.bottom)

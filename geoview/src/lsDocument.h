@@ -5,6 +5,7 @@
 
 class lsRenderer;
 class lsEntity;
+class lsBoundbox;
 
 /**
  * 文档类。存储实际的数据结构，比如图层、图元。
@@ -30,7 +31,7 @@ public:
 
 	void AddEntity(std::shared_ptr<lsEntity> entity);
 
-	wxRect2DDouble GetBoundbox() const;
+	lsBoundbox GetBoundbox() const;
 
 	void SelectAll();
 	void DeselectAll();

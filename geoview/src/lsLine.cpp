@@ -2,7 +2,9 @@
 
 #include "lsCanvas.h"
 
-lsLine::lsLine(const wxPoint2DDouble& s_, const wxPoint2DDouble& e_, double width_)
+#include "lsBoundbox.h"
+
+lsLine::lsLine(const lsPoint& s_, const lsPoint& e_, double width_)
 	: s(s_)
 	, e(e_)
 	, r(width_)
@@ -21,25 +23,25 @@ void lsLine::Draw(lsRenderer& renderer) const
 	renderer.DrawLine(s, e);
 }
 
-wxRect2DDouble lsLine::GetBoundBox() const
+lsBoundbox lsLine::GetBoundBox() const
 {
-	double minx = std::min(s.m_x, e.m_x);
-	double miny = std::min(s.m_y, e.m_y);
-	double maxx = std::max(s.m_x, e.m_x);
-	double maxy = std::max(s.m_y, e.m_y);
-	return wxRect2DDouble(minx, miny, maxx - minx, maxy - miny);
+	double minx = std::min(s.x, e.x);
+	double miny = std::min(s.y, e.y);
+	double maxx = std::max(s.x, e.x);
+	double maxy = std::max(s.y, e.y);
+	return lsBoundbox(minx, miny, maxx - minx, maxy - miny);
 }
 
-bool lsLine::HitTest(const wxPoint2DDouble& p, double tol) const
+bool lsLine::HitTest(const lsPoint& p, double tol) const
 {
 	// point to segment distance
-	wxPoint2DDouble se(e - s);
-	wxPoint2DDouble sp(p - s);
+	lsPoint se(e - s);
+	lsPoint sp(p - s);
 
-	double se2 = se.m_x * se.m_x + se.m_y * se.m_y;
-	double t = (sp.m_x * se.m_x + sp.m_y * se.m_y) / se2;
+	double se2 = se.x * se.x + se.y * se.y;
+	double t = (sp.x * se.x + sp.y * se.y) / se2;
 
-	wxPoint2DDouble proj;
+	lsPoint proj;
 	if (t <= 0.0)
 	{
 		proj = s;
@@ -50,20 +52,20 @@ bool lsLine::HitTest(const wxPoint2DDouble& p, double tol) const
 	}
 	else
 	{
-		proj = wxPoint2DDouble(s.m_x + t * se.m_x, s.m_y + t * se.m_y);
+		proj = lsPoint(s.x + t * se.x, s.y + t * se.y);
 	}
 
-	double dx = p.m_x - proj.m_x;
-	double dy = p.m_y - proj.m_y;
+	double dx = p.x - proj.x;
+	double dy = p.y - proj.y;
 	double dis = std::sqrt(dx * dx + dy * dy);
 
 	return (dis <= tol);
 }
 
-bool lsLine::IntersectWith(const wxRect2DDouble& box) const
+bool lsLine::IntersectWith(const lsBoundbox& box) const
 {
 	// 要考虑线段是否和box真正相交
-	wxRect2DDouble segbox = GetBoundBox();
-	return box.Intersects(segbox);
+	lsBoundbox segbox = GetBoundBox();
+	return box.is_intersect(segbox);
 }
 

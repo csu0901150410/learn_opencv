@@ -10,6 +10,9 @@ public:
 	lsPoint(const lsPoint& other);
 	~lsPoint() = default;
 
+	lsPoint operator-(const lsPoint& other) const;
+	lsPoint operator+=(const lsPoint& other);
+
 public:
 	lsReal x;
 	lsReal y;

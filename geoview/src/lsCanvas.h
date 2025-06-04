@@ -19,7 +19,7 @@ public:
 	virtual void SetColor(const wxColour& color) = 0;
 
 	virtual void DrawLine(double sx, double sy, double ex, double ey) = 0;
-	virtual void DrawLine(const wxPoint2DDouble& s, const wxPoint2DDouble& e) = 0;
+	virtual void DrawLine(const lsPoint& s, const lsPoint& e) = 0;
 
 	virtual void DrawRectangle(double x, double y, double w, double h) = 0;
 
@@ -45,7 +45,7 @@ public:
 	void SetColor(const wxColour& color) override;
 	
 	void DrawLine(double sx, double sy, double ex, double ey) override;
-	void DrawLine(const wxPoint2DDouble& s, const wxPoint2DDouble& e) override;
+	void DrawLine(const lsPoint& s, const lsPoint& e) override;
 
 	void DrawRectangle(double x, double y, double w, double h) override;
 
@@ -128,6 +128,6 @@ private:
 	wxSize m_lastClientSize;
 
 	bool m_boxsel;
-	wxPoint m_boxselStartPos;
-	wxPoint m_boxselEndPos;
+	lsPoint m_boxselStartPos;
+	lsPoint m_boxselEndPos;
 };
