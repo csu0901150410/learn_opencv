@@ -25,6 +25,7 @@
     <ClCompile Include="src\lsArc.cpp" />
     <ClCompile Include="src\lsBoundbox.cpp" />
     <ClCompile Include="src\lsCanvas.cpp" />
+    <ClCompile Include="src\lsClock.cpp" />
     <ClCompile Include="src\lsDocument.cpp" />
     <ClCompile Include="src\lsDxfReader.cpp" />
     <ClCompile Include="src\lsLine.cpp" />
@@ -49,6 +50,7 @@
     <ClInclude Include="src\lsArc.h" />
     <ClInclude Include="src\lsBoundbox.h" />
     <ClInclude Include="src\lsCanvas.h" />
+    <ClInclude Include="src\lsClock.h" />
     <ClInclude Include="src\lsDefs.h" />
     <ClInclude Include="src\lsDocument.h" />
     <ClInclude Include="src\lsDxfReader.h" />
@@ -56,8 +58,12 @@
     <ClInclude Include="src\lsLine.h" />
     <ClInclude Include="src\lsMainFrame.h" />
     <ClInclude Include="src\lsPoint.h" />
+    <ClInclude Include="src\lsTime.hpp" />
     <ClInclude Include="src\lsView.h" />
     <ClInclude Include="src\lsViewControl.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\lsTime.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

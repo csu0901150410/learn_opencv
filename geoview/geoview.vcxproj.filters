@@ -40,6 +40,9 @@
     <ClCompile Include="src\lsArc.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\lsClock.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lsApp.h">
@@ -114,6 +117,12 @@
     <ClInclude Include="src\lsArc.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\lsTime.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lsClock.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -125,5 +134,10 @@
     <Filter Include="3rdparty\dxflib">
       <UniqueIdentifier>{f6bf12ce-a952-4ebb-9953-2fbf5b3d16ae}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\lsTime.inl">
+      <Filter>src</Filter>
+    </None>
   </ItemGroup>
 </Project>

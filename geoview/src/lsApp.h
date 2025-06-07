@@ -3,9 +3,6 @@
 #include <wx/wx.h>
 #include <wx/docview.h>
 
-// for wxLogTrace
-#define TRACE_GEOVIEW "GEOVIEW"
-
 class lsCanvas;
 
 class lsMainFrame;

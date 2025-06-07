@@ -1,4 +1,5 @@
 ﻿#include "lsApp.h"
+#include "lsDefs.h"
 #include "lsMainFrame.h"
 #include "lsDocument.h"
 #include "lsView.h"

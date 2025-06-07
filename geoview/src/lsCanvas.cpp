@@ -1,10 +1,15 @@
 ﻿#include <wx/dcbuffer.h>
 #include <wx/graphics.h>
 
+#include <set>
+
 #include "lsCanvas.h"
 #include "lsDocument.h"
 #include "lsEntity.h"
 #include "lsBoundbox.h"
+
+#include "lsTime.hpp"
+#include "lsClock.h"
 
 lsCanvas::lsCanvas(wxView* view, wxWindow* parent /*= nullptr*/, lsRenderer* renderer /*= nullptr*/)
 	: wxScrolledWindow(parent ? parent : view->GetFrame())
@@ -127,9 +132,10 @@ void lsCanvas::OnMouse(wxMouseEvent& event)
 			if (HasCapture())
 				ReleaseCapture();
 
-			PerformBoxSelection();
+			bool bChangedSel = PerformBoxSelection();
+			if (bChangedSel)
+				MakeDirty();
 
-			MakeDirty();
 			Refresh();
 		}
 	}
@@ -225,7 +231,7 @@ void lsCanvas::ZoomToFit()
 	Refresh();
 }
 
-void lsCanvas::PerformBoxSelection()
+bool lsCanvas::PerformBoxSelection()
 {
 	lsPoint ps = m_viewControl.ScreenToWorld(m_boxselStartPos);
 	lsPoint pe = m_viewControl.ScreenToWorld(m_boxselEndPos);
@@ -239,16 +245,51 @@ void lsCanvas::PerformBoxSelection()
 
 	auto doc = wxDynamicCast(m_view->GetDocument(), lsDocument);
 	if (!doc)
-		return;
+		return false;
 
-	if (!wxGetKeyState(WXK_CONTROL))
-		doc->DeselectAll();
+	lsClock clock;
 
+	std::set<std::shared_ptr<lsEntity>> lastSels;
+	std::set<std::shared_ptr<lsEntity>> currSels;
 	for (auto& entity : doc->GetEntities())
 	{
+		if (entity->IsSelected())
+			lastSels.insert(entity);
 		if (entity->IntersectWith(box))
+			currSels.insert(entity);
+	}
+
+	lsTime elapsed = clock.getElapsedTime();
+	wxLogTrace(TRACE_GEOVIEW, "Boxsel elapsed : %ld ms", elapsed.asMilliseconds());
+
+	bool bChangedSel = false;
+	if (!currSels.empty())
+	{
+		// 有选中，看看是不是和上次选中的一样
+		if (currSels.size() != lastSels.size())
+			bChangedSel = true;
+		else
+		{
+			for (auto& entity : currSels)
+			{
+				if (!lastSels.count(entity))
+				{
+					bChangedSel = true;
+					break;
+				}
+			}
+		}
+	}
+
+	if (bChangedSel)
+	{
+		if (!wxGetKeyState(WXK_CONTROL))
+			doc->DeselectAll();
+		for (auto& entity : currSels)
 			entity->SetSelected(true);
 	}
+	
+	return bChangedSel;
 }
 
 void lsCanvas::MakeDirty()
@@ -271,26 +312,17 @@ void lsCanvas::UpdateBitmap()
 	// 重新生成缓存位图
 	if (!doc->IsEmpty())
 	{
+		lsClock clock;
+
 		m_renderer->BeginDraw();
 
 		m_renderer->SetTransform(m_viewControl.GetWorldToScreenMatrix());
 		doc->Draw(*m_renderer);
 
-		/*if (m_boxsel)
-		{
-			wxRect2DDouble box(
-				std::min(m_boxselStartPos.x, m_boxselEndPos.x),
-				std::min(m_boxselStartPos.y, m_boxselEndPos.y),
-				std::abs(m_boxselStartPos.x - m_boxselEndPos.x),
-				std::abs(m_boxselStartPos.y - m_boxselEndPos.y)
-			);
-
-			m_renderer->SetColor(*wxGREEN);
-			m_renderer->DrawRectangle(box.m_x, box.m_y, box.m_width, box.m_height);
-			m_renderer->SetColor(*wxRED);
-		}*/
-
 		m_renderer->EndDraw();
+
+		lsTime elapsed = clock.getElapsedTime();
+		wxLogTrace(TRACE_GEOVIEW, "Frame elapsed : %ld ms", elapsed.asMilliseconds());
 
 		m_cachedBitmap = m_renderer->ToBitmap();
 		m_bDirty = false;

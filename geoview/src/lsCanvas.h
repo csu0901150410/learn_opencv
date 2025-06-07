@@ -100,7 +100,7 @@ public:
 
 	void ZoomToFit();
 
-	void PerformBoxSelection();
+	bool PerformBoxSelection();
 
 	void MakeDirty();
 	void UpdateBitmap();
