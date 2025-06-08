@@ -263,20 +263,17 @@ bool lsCanvas::PerformBoxSelection()
 	wxLogTrace(TRACE_GEOVIEW, "Boxsel elapsed : %ld ms", elapsed.asMilliseconds());
 
 	bool bChangedSel = false;
-	if (!currSels.empty())
+	// 有选中，看看是不是和上次选中的一样
+	if (currSels.size() != lastSels.size())
+		bChangedSel = true;
+	else
 	{
-		// 有选中，看看是不是和上次选中的一样
-		if (currSels.size() != lastSels.size())
-			bChangedSel = true;
-		else
+		for (auto& entity : currSels)
 		{
-			for (auto& entity : currSels)
+			if (!lastSels.count(entity))
 			{
-				if (!lastSels.count(entity))
-				{
-					bChangedSel = true;
-					break;
-				}
+				bChangedSel = true;
+				break;
 			}
 		}
 	}

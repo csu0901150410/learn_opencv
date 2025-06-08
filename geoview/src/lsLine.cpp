@@ -68,23 +68,123 @@ bool lsLine::IntersectWith(const lsBoundbox& box) const
 	// See https://en.wikipedia.org/wiki/Cohen%E2%80%93Sutherland_algorithm
 	// See https://sighack.com/post/cohen-sutherland-line-clipping-algorithm
 
-	// 策略1
-	// 如果线段两个端点都在box的一侧，则线段完全在box外，线段和box不相交
-	if (s.x < box.left && e.x < box.left)
-		return false;
-	if (s.x > box.right && e.x > box.right)
-		return false;
-	if (s.y < box.bottom && e.y < box.bottom)
-		return false;
-	if (s.y > box.top && e.y > box.top)
-		return false;
+	auto encode = [](lsReal x, lsReal y, lsReal clipx, lsReal clipy, lsReal clipw, lsReal cliph) {
+		int code = 0;
+		
+		lsReal xmin = clipx;
+		lsReal ymin = clipy;
+		lsReal xmax = clipx + clipw;
+		lsReal ymax = clipy + cliph;
 
-	// 策略二
-	// 如果线段完全在box内，则线段和box相交，这种比较适合框选逻辑
-	if (box.is_in(s) && box.is_in(e))
-		return true;
-	else
-		return false;
+		// 点在裁剪区域左侧，置位bit-0
+		if (x < xmin)
+			code |= (1 << 0);
+		// 点在裁剪区域右侧，置位bit-1
+		else if (x > xmax)
+			code |= (1 << 1);
+		
+		// 点在裁剪区域下方，置位bit-2
+		if (y < ymin)
+			code |= (1 << 2);
+		// 点在裁剪区域上方，置位bit-3
+		else if (y > ymax)
+			code |= (1 << 3);
 
-	return true;
+		return code;
+	};
+
+	lsReal clipx = box.left;
+	lsReal clipy = box.bottom;
+	lsReal clipw = box.width();
+	lsReal cliph = box.height();
+
+	int code0 = 0, code1 = 0;
+	lsReal xmin = clipx;
+	lsReal ymin = clipy;
+	lsReal xmax = clipx + clipw;
+	lsReal ymax = clipy + cliph;
+
+	// true-线段和裁剪区域相交
+	bool bAccept = false;
+	lsReal x0 = s.x;
+	lsReal y0 = s.y;
+	lsReal x1 = e.x;
+	lsReal y1 = e.y;
+
+	do
+	{
+		code0 = encode(x0, y0, clipx, clipy, clipw, cliph);
+		code1 = encode(x1, y1, clipx, clipy, clipw, cliph);
+
+		// 线段两个端点都在裁剪区域内，则线段在裁剪区域内
+		if (0 == code0 && 0 == code1)
+		{
+			bAccept = true;
+			break;
+		}
+
+		// 端点编码位与不为0，则编码在相同的位上同时为1
+		// 表明两个端点位于裁剪区域同一侧，线段完全在裁剪区域外
+		else if (0 != (code0 & code1))
+		{
+			break;
+		}
+
+		// 选一个裁剪区域外的端点进行裁剪，裁剪到裁剪区域的边界
+		// 分两种情况
+		// 1、两个端点都在区域外，线段穿过区域或者不穿过区域
+		// 2、两个端点分布在区域两侧
+		// 注意，对于端点在区域外不同侧并且线段未穿过区域的，要计算裁剪，这是低效的
+		else
+		{
+			double x = 0, y = 0;
+			int code = 0 != code0 ? code0 : code1;
+
+			// 注意以下各情况(x1 - x0)和(y1 - y0)
+
+			// 端点在裁剪区域左侧
+			if (0 != (code & (1 << 0)))
+			{
+				x = xmin;
+				y = (y1 - y0) * (x - x0) / (x1 - x0) + y0;
+			}
+			// 端点在裁剪区域右侧
+			else if (0 != (code & (1 << 1)))
+			{
+				x = xmax;
+				y = (y1 - y0) * (x - x0) / (x1 - x0) + y0;
+			}
+			// 端点在裁剪区域下方
+			else if (0 != (code & (1 << 2)))
+			{
+				y = ymin;
+				x = (x1 - x0) * (y - y0) / (y1 - y0) + x0;
+			}
+			// 端点在裁剪区域上方
+			else if (0 != (code & (1 << 3)))
+			{
+				y = ymax;
+				x = (x1 - x0) * (y - y0) / (y1 - y0) + x0;
+			}
+			// 端点在裁剪区域内部
+			else
+			{
+				// 此时端点不可能在区域内部
+			}
+
+			// 更新被裁剪的端点
+			if (code == code0)
+			{
+				x0 = x;
+				y0 = y;
+			}
+			else
+			{
+				x1 = x;
+				y1 = y;
+			}
+		}
+	} while (true);
+
+	return bAccept;
 }

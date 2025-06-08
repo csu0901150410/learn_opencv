@@ -82,7 +82,7 @@ void lsView::OnGenerateRandomLines(wxCommandEvent& event)
 		double maxy = 800;
 
 		doc->ClearEntities();
-		for (int i = 0; i < 200000; ++i)
+		for (int i = 0; i < 1; ++i)
 		{
 			lsPoint p1(rand() % static_cast<int>(maxx),
 				rand() % static_cast<int>(maxy));
