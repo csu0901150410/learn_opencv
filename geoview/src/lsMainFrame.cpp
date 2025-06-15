@@ -61,6 +61,7 @@ wxMenuBar* lsMainFrame::CreateMenuBar()
 	editMenu->Append(ID_MENU_CANVAS_FIT, wxT("Zoom to fit"));
 	editMenu->Append(ID_MENU_LOAD_DXF, wxT("Load .dxf file"));
 	editMenu->Append(ID_MENU_TEST_GEOS, wxT("Test GEOS"));
+	editMenu->Append(ID_MENU_SHOW_INTER, wxT("Show intersections"));
 
 	menuBar->Append(fileMenu, wxT("File"));
 	menuBar->Append(editMenu, wxT("Edit"));

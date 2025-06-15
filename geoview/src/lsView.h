@@ -23,6 +23,7 @@ public:
 	void OnCanvasZoomToFit(wxCommandEvent& event);
 	void OnLoadDxfFile(wxCommandEvent& event);
 	void OnTestGeos(wxCommandEvent& event);
+	void OnShowIntersection(wxCommandEvent& event);
 
 public:
 	lsDocument* GetDocument();

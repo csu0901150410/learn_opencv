@@ -11,7 +11,7 @@ class lsBoundbox;
 class lsLine : public lsEntity
 {
 public:
-	lsLine(const lsPoint& s, const lsPoint& e, double width);
+	lsLine(const lsPoint& s, const lsPoint& e, double width = 0);
 
 	void Draw(lsRenderer& renderer) const override;
 
@@ -21,7 +21,9 @@ public:
 
 	bool IntersectWith(const lsBoundbox& box) const override;
 
-private:
+	bool IntersectWith(const lsLine& seg, lsPoint& pos) const;
+
+public:
 	lsPoint s;
 	lsPoint e;
 	double r;

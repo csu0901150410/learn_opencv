@@ -4,6 +4,8 @@
 
 #include "lsBoundbox.h"
 
+#include "lsGeosAdapter.h"
+
 lsLine::lsLine(const lsPoint& s_, const lsPoint& e_, double width_)
 	: s(s_)
 	, e(e_)
@@ -187,4 +189,11 @@ bool lsLine::IntersectWith(const lsBoundbox& box) const
 	} while (true);
 
 	return bAccept;
+}
+
+bool lsLine::IntersectWith(const lsLine& seg, lsPoint& pos) const
+{
+	
+	bool bRet = lsGeosAdapter::intersection(s, e, seg.s, seg.e, pos);
+	return bRet;
 }

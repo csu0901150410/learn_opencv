@@ -14,6 +14,7 @@ enum
 	ID_MENU_LOAD_DXF,
 
 	ID_MENU_TEST_GEOS,
+	ID_MENU_SHOW_INTER,
 };
 
 /**

@@ -1,10 +1,16 @@
 ﻿#include <random>
 
 #include <geos/geom/GeometryFactory.h>
+#include <geos/geom/Geometry.h>
+
+#include <geos/io/WKTReader.h>
+#include <geos/io/WKTWriter.h>
 
 #include "lsWKTReader.h"
 #include "lsDocument.h"
 #include "lsLine.h"
+
+#include "lsGeosAdapter.h"
 
 lsWKTReader::lsWKTReader(lsDocument* document, const std::string& filepath)
 	: m_document(document)
@@ -49,10 +55,7 @@ void lsWKTReader::generate_random_segments()
 		if (!seg)
 			continue;
 
-		const auto& coords = seg->getCoordinates();
-		lsPoint ps(coords->getAt(0).x, coords->getAt(0).y);
-		lsPoint pe(coords->getAt(1).x, coords->getAt(1).y);
-		m_document->AddEntity(std::make_shared<lsLine>(ps, pe, 1.0));
+		m_document->AddEntity(std::make_shared<lsLine>(lsGeosAdapter::geos2seg(seg)));
 	}
 }
 
