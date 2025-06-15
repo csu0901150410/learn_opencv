@@ -43,6 +43,9 @@
     <ClCompile Include="src\lsClock.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\lsWKTReader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lsApp.h">
@@ -121,6 +124,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\lsClock.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lsWKTReader.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

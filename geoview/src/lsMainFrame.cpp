@@ -60,6 +60,7 @@ wxMenuBar* lsMainFrame::CreateMenuBar()
 	editMenu->Append(ID_MENU_RANDOM_LINES, wxT("Generate Random Lines ..."));
 	editMenu->Append(ID_MENU_CANVAS_FIT, wxT("Zoom to fit"));
 	editMenu->Append(ID_MENU_LOAD_DXF, wxT("Load .dxf file"));
+	editMenu->Append(ID_MENU_TEST_GEOS, wxT("Test GEOS"));
 
 	menuBar->Append(fileMenu, wxT("File"));
 	menuBar->Append(editMenu, wxT("Edit"));

@@ -7,6 +7,7 @@
 
 #include "lsLine.h"
 #include "lsDxfReader.h"
+#include "lsWKTReader.h"
 
 wxIMPLEMENT_DYNAMIC_CLASS(lsView, wxView);
 
@@ -20,6 +21,7 @@ lsView::lsView()
 	Bind(wxEVT_MENU, &lsView::OnGenerateRandomLines, this, ID_MENU_RANDOM_LINES);
 	Bind(wxEVT_MENU, &lsView::OnCanvasZoomToFit, this, ID_MENU_CANVAS_FIT);
 	Bind(wxEVT_MENU, &lsView::OnLoadDxfFile, this, ID_MENU_LOAD_DXF);
+	Bind(wxEVT_MENU, &lsView::OnTestGeos, this, ID_MENU_TEST_GEOS);
 }
 
 bool lsView::OnCreate(wxDocument* doc, long flags)
@@ -130,6 +132,47 @@ void lsView::OnLoadDxfFile(wxCommandEvent& event)
 			doc->UpdateAllViews();        // 通知视图刷新
 			m_canvas->ZoomToFit();
 		}
+	}
+}
+
+void lsView::OnTestGeos(wxCommandEvent& event)
+{
+	//wxFileDialog dlg(
+	//	wxGetApp().GetTopWindow(),
+	//	wxT("Select DXF File"),
+	//	"",
+	//	"",
+	//	wxT("DXF File (*.dxf)|*.dxf"),
+	//	wxFD_OPEN | wxFD_FILE_MUST_EXIST
+	//);
+
+	//if (wxID_OK == dlg.ShowModal())
+	//{
+	//	wxString filepath = dlg.GetPath();
+	//	auto doc = wxDynamicCast(GetDocument(), lsDocument);
+	//	if (doc)
+	//	{
+	//		doc->ClearEntities();
+
+	//		lsDxfReader dxfReader;
+	//		dxfReader.import(doc, filepath.ToStdString());
+
+	//		doc->Modify(true);            // 标记文档已修改
+	//		doc->UpdateAllViews();        // 通知视图刷新
+	//		m_canvas->ZoomToFit();
+	//	}
+	//}
+
+	auto doc = wxDynamicCast(GetDocument(), lsDocument);
+	if (doc)
+	{
+		doc->ClearEntities();
+
+		lsWKTReader wktReader(doc, "");
+
+		doc->Modify(true);            // 标记文档已修改
+		doc->UpdateAllViews();        // 通知视图刷新
+		m_canvas->ZoomToFit();
 	}
 }
 

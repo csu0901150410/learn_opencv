@@ -33,6 +33,7 @@
     <ClCompile Include="src\lsPoint.cpp" />
     <ClCompile Include="src\lsView.cpp" />
     <ClCompile Include="src\lsViewControl.cpp" />
+    <ClCompile Include="src\lsWKTReader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\3rdparty\dxflib\dl_attributes.h" />
@@ -61,6 +62,7 @@
     <ClInclude Include="src\lsTime.hpp" />
     <ClInclude Include="src\lsView.h" />
     <ClInclude Include="src\lsViewControl.h" />
+    <ClInclude Include="src\lsWKTReader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\lsTime.inl" />
@@ -153,18 +155,20 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;USE_UNSTABLE_GEOS_CPP_API;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(CPP_LIBS)\wxWidgets\include;$(CPP_LIBS)\wxWidgets\include\msvc;$(CPP_LIBS)\cairo\include;../3rdparty/dxflib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_LIBS)\wxWidgets\include;$(CPP_LIBS)\wxWidgets\include\msvc;$(CPP_LIBS)\cairo\include;$(CPP_LIBS)\geos\include;../3rdparty/dxflib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(CPP_LIBS)\wxWidgets\lib\vc_x64_lib;$(CPP_LIBS)\cairo\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>cairo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CPP_LIBS)\wxWidgets\lib\vc_x64_lib;$(CPP_LIBS)\cairo\lib\x64;$(CPP_LIBS)\geos\build\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cairo.lib;geos.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(CPP_LIBS)\cairo\lib\x64\cairo.dll" "$(SolutionDir)build\" /s /e /i /d /y</Command>
+      <Command>xcopy "$(CPP_LIBS)\cairo\lib\x64\cairo.dll" "$(SolutionDir)build\" /s /e /i /d /y
+xcopy "$(CPP_LIBS)\geos\build\bin\Debug\geos.dll" "$(SolutionDir)build\" /s /e /i /d /y
+xcopy "$(CPP_LIBS)\geos\build\bin\Debug\geos.pdb" "$(SolutionDir)build\" /s /e /i /d /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
